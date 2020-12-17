@@ -22,7 +22,7 @@ Terrain::Terrain(std::string config_file)
         terrainTexture.InitTexture(config_struct.textureLocation);
     }
 
-
+    terrainShader.makeShader(config_struct.shaderLocation);
 }
 
 
@@ -65,6 +65,10 @@ void Terrain::read_config_file(std::string& name)
     if(config_struct.texture)
     {
         config_struct.textureLocation = colors["textureLocation"].asString();
+        if(colors["textureSlot"])
+        {
+            config_struct.textureSlot = colors["textureSlot"].asInt();
+        }
     }
     else
     {   
@@ -82,11 +86,16 @@ void Terrain::read_config_file(std::string& name)
         }
     }
     
-    
+    auto shaderConfig = temp["shader"];
+    if(shaderConfig["shaderLocation"])
+    {
+        config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
+    }
 
 
 }
 
+//In desperate need of some abstraction idk
 void Terrain::init()
 {
    
@@ -300,6 +309,28 @@ void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)
     buffer[place+3] = yBlend;
     buffer[place+4] = xBlend;
 }
+
+
+void Terrain::Draw(GLenum primitive)
+{
+    glBindVertexArray(vao);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
+
+    terrainShader.Bind();
+
+    if(config_struct.texture)
+    {
+        terrainTexture.Bind(config_struct.textureSlot);
+        terrainShader.setUniform1i("u_Texture",config_struct.textureSlot); //Will need to have the name of the uniform set in confguration but hard coded for now
+
+    }
+
+
+    glDrawElements(primitive,config_struct.x * config_struct.y * 6,GL_UNSIGNED_INT,nullptr);
+
+}
+
+
 
 /* old code i am too scared to delete incase i may need it again*/
 

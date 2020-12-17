@@ -17,11 +17,17 @@
    "colors":
    {
       "staticColor": false,
-      "texture": false,
+      
+      "texture": true,
       "textureLocation": "res/textures/marble.png",
+      "textureSlot": 2,
+
       "color1": [0.5,1,1],
       "color2": [0.5,0.3,0.8]
+   },
 
-
+   "shader":
+   {
+      "shaderLocation": "res/shaders/basic.shader"
    }
 }

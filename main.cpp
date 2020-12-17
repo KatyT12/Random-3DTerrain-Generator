@@ -159,25 +159,12 @@ int main(void)
 		glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
 		
 
+        terrain.terrainShader.Bind();
+        terrain.terrainShader.setUniformMat4f("model",model);
+        terrain.terrainShader.setUniformMat4f("proj",proj);
+        terrain.terrainShader.setUniformMat4f("view",view);
+        terrain.Draw();
 
-        terrainShader.Bind();
-        terrainShader.setUniformMat4f("model",model);
-        terrainShader.setUniformMat4f("view",view);
-        terrainShader.setUniformMat4f("proj",proj);
-        terrainShader.setUniform1i("u_Texture",0);
-        
-        /* This will just draw the points rather than use the generated index buffer
-        terrainVA.Bind();
-         glBindVertexArray(randos.getVao());  
-         glDrawArrays(GL_POINTS,0,1000*1000);
-        */
-
-
-       glBindVertexArray(terrain.getVao());
-      // randos.terrainTexture.Bind();
-       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,terrain.getIb());
-
-       glDrawElements(GL_TRIANGLES,1000 * 1000 * 6,GL_UNSIGNED_INT,nullptr);
 
 /*    An attempt to draw the normals aswell. If you uncomment this make sure to uncomment the code above where NormalShader is defined
       NormalsShader.Bind();

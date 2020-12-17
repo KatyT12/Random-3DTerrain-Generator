@@ -4,7 +4,7 @@
 #include <vector>
 #include "Texture.h"
 #include "Random.h"
-
+#include "shader.h"
 
 struct Config
 {
@@ -23,11 +23,14 @@ struct Config
     bool staticColor = false;
     bool texture = false;
     std::string textureLocation = "";
+    int textureSlot = 0;
+
     std::vector<float> color1 = {0.317,0.149,0.149};
     std::vector<float> color2 = {0.239,0.576,0};
 
-
-};
+    //This shader doesn't take in texture coordinates it just takes colors. for textures change to a shader such as basic.shader or your own shader
+    std::string shaderLocation = "res/shader/color2.shader"; 
+};  
 
 class Terrain
 {
@@ -40,12 +43,14 @@ class Terrain
         inline int getVao() const {return vao;}
         inline int getIb() const {return ib;}
 
+        void Draw(GLenum primitive = GL_TRIANGLES);
+
         float getTerrainHeight(float x, float y);
 
         float length;
         float width;
         Texture terrainTexture;
-
+        shader terrainShader;
 
     private:
         void read_config_file(std::string& name);
@@ -54,7 +59,6 @@ class Terrain
         unsigned int vao;
         unsigned int vbo;
         unsigned int ib;
-
 
         float barryCentric(std::vector<float> p1, std::vector<float> p2, std::vector<float> p3, std::vector<float> pos) const;
         
@@ -68,7 +72,7 @@ class Terrain
         Config config_struct;
         float* height_map;
 
-
+        
 
 
 };
