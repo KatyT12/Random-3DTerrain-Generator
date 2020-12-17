@@ -25,8 +25,10 @@ class shader
         std::unordered_map<std::string,int> m_UniformLocationCache;
 
     public:
-        shader(const std::string& filepath);
-        shader(const std::string& filepath, bool geometry);
+        
+        shader();
+        shader(const std::string& filepath, bool geometry = false);
+        void makeShader(const std::string& filepath, bool geometry = false);
         ~shader();
         //Is actually called glUseProgram but will just call it bind to make the API consistant
         void Bind() const;

@@ -6,22 +6,15 @@
 #include "renderer.h"
 #include <vector>
 
-
-shader::shader(const std::string& filepath)
-    : m_filepath(filepath), m_rendererID(0) //m_filepath member is just for debugging purposes
-{
-    
-    /* Parsing source, Creating the program*/
-    ShaderProgramSource source = ParseShader(filepath);
-    m_rendererID  = CreateShader(source.VertexSource,source.FragmentSource);
-}
+shader::shader()
+:m_rendererID(0)
+{}
 
 
 shader::shader(const std::string& filepath, bool geometry)
 	: m_filepath(filepath), m_rendererID(0) //m_filepath member is just for debugging purposes
 {
-	ShaderProgramSource source = ParseShader(filepath,geometry);
-    m_rendererID  = CreateShader(source.VertexSource,source.FragmentSource,source.GeometrySource);
+	makeShader(filepath,geometry);
 }	
 
 
@@ -31,6 +24,22 @@ shader::~shader()
     GLCall(glDeleteProgram(m_rendererID));
 }
 
+void shader::makeShader(const std::string& filepath, bool geometry)
+{
+	m_filepath = filepath;
+	if(geometry)
+	{
+		ShaderProgramSource source = ParseShader(filepath,geometry);
+ 	   m_rendererID  = CreateShader(source.VertexSource,source.FragmentSource,source.GeometrySource);
+	}
+	else
+	{
+		ShaderProgramSource source = ParseShader(filepath);
+    	m_rendererID  = CreateShader(source.VertexSource,source.FragmentSource);
+	}
+	
+
+}
 /* Took this from main.cpp. Don't need file path because that is a member but lets have it anyway*/
 ShaderProgramSource shader::ParseShader(const std::string& filepath)
 {
