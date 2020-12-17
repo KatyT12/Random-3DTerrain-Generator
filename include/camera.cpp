@@ -74,25 +74,7 @@ void Camera::processMouse(float x_offset, float y_offset, bool constrain)
 
 void Camera::processKeyboard(movement direction, float deltatime)
 {
-	//Some terrain collision bullshit
-	if(terrain != nullptr)
-	{
-		float terrainheight = terrain->getTerrainHeight(Position.x,Position.z);
-		if(terrainheight != 0)
-		{
-			if(Position.y < terrainheight + 0.5 && Position.y > terrainheight - 0.5 && Position.y > terrainheight && Front.y > 0.0 && direction == FORWARD)
-			{
-				direction = BACK;
-			}
-			else if(Position.y < terrainheight + 0.5 && Position.y > terrainheight - 0.5 && Position.y < terrainheight && Front.y < 0.0 && direction == FORWARD)
-			{
-				direction = BACK;
-				
-			}
-		}
-
-		
-	}
+	
 
 	float vel = Speed*deltatime;
 	if(direction == FORWARD)
@@ -112,7 +94,19 @@ void Camera::processKeyboard(movement direction, float deltatime)
 		Position += Right*vel;
 	}	
 
+	float terrainheight = terrain->getTerrainHeight(Position.x,Position.z);
+	if(terrainheight != 0)
+	{
+		if(Position.y < terrainheight + 0.25 && Position.y > terrainheight - 0.25 && Position.y > terrainheight)
+		{
+			Position.y = terrainheight + 0.25;
+		}
+		else if(Position.y < terrainheight + 0.25 && Position.y > terrainheight - 0.25 && Position.y < terrainheight)
+		{
+			Position.y = terrainheight - 0.25;
 
+		}
+	}
 
 }
 
