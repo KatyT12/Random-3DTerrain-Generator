@@ -6,13 +6,13 @@ Then call the init() function on the object and this function will actually make
 I have tried to make it as configurable as possible. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
 
 
+##Building the program
 
-To build the program run 
+```
+$ cmake .
 
-cmake .
-
-make
-
+$ make
+```
 Wherever you build it to make sure you run ./main in the directory the source file (main.cpp) is
 
 However note that if you are using Ubuntu you will likely have to remove some of the libraries included or change the name of some of them such as glfw3 to glfw.
@@ -28,14 +28,14 @@ Of course make sure you have all the necessary libraries/headers.
 This includes:
 
 
-jsoncpp
-glfw3 (or glfw)
-glew
-assimp (possibly in the future for model loading)
+. jsoncpp
+. glfw3 (or glfw)
+. glew
+. assimp (possibly in the future for model loading)
 
 And likely some other libraries I am forgetting
 
-TODO:
+##TODO:
     . Better collisiom detection
     . Lighting configuration options
     . Work better with textures
