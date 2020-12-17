@@ -6,7 +6,7 @@ Then call the init() function on the object and this function will actually make
 I have tried to make it as configurable as possible. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
 
 
-##Building the program
+## Building the program
 
 ```
 $ cmake .
@@ -35,7 +35,7 @@ This includes:
 
 And likely some other libraries I am forgetting
 
-##TODO:
+## TODO:
     . Better collisiom detection
     . Lighting configuration options
     . Work better with textures
