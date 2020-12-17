@@ -28,10 +28,10 @@ Of course make sure you have all the necessary libraries/headers.
 This includes:
 
 
-. jsoncpp
-. glfw3 (or glfw)
-. glew
-. assimp (possibly in the future for model loading)
+    . jsoncpp
+    . glfw3 (or glfw)
+    . glew
+    . assimp (possibly in the future for model loading)
 
 And likely some other libraries I am forgetting
 
