@@ -9,7 +9,7 @@
 
 #include "include/random_terrain.h"
 
-/* Maths library we are using */
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -19,8 +19,6 @@ void processInput(GLFWwindow *window);
 void fillVBO();
 
 
-/* Global variables */
-
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f),glm::vec3(0.0f,1.0f,0.0f),-90.0f,0.0f,10.0f);
 float lastX = 960 / 2.0f;
 float lastY = 540 / 2.0f;
@@ -28,8 +26,8 @@ bool firstMouse = true;
 
 
 //timing
-float deltaTime = 0.0f; //change in time since last frame
-float lastFrame = 0.0f; //The time of the last frame
+float deltaTime = 0.0f; 
+float lastFrame = 0.0f; 
 
 
 
@@ -44,7 +42,7 @@ void mouse_callback(GLFWwindow* window, double mouseX, double mouseY)
     }
 
     float xoffset = mouseX - lastX;
-    float yoffset = lastY - mouseY; // reversed since y-coordinates go from bottom to top
+    float yoffset = lastY - mouseY; //reversed since y-coordinates go from bottom to top
 
     lastX = mouseX;
     lastY = mouseY;
@@ -65,7 +63,6 @@ int main(void)
 {
     GLFWwindow* window;
 
-    /* Initialize the library */
     if (!glfwInit())
         return -1;
 
@@ -86,7 +83,6 @@ int main(void)
 
 
 
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
     
     //This should fit our monitors refresh rate or whatever
@@ -126,7 +122,6 @@ int main(void)
 
    // shader NormalsShader("res/shaders/normals.shader",true);
 
-   shader terrainShader("res/shaders/color2.shader");
    // shader terrainShader("res/shaders/basic.shader");
 
  
@@ -143,7 +138,6 @@ int main(void)
 
     while(!glfwWindowShouldClose(window)){
 
-        //glClearColor(0.2f, 0.2f, 0.05f, 1.0f); //Make the color of the place a bit lighter
 
 	    GLCall(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
 
@@ -164,18 +158,6 @@ int main(void)
         terrain.terrainShader.setUniformMat4f("proj",proj);
         terrain.terrainShader.setUniformMat4f("view",view);
         terrain.Draw();
-
-
-/*    An attempt to draw the normals aswell. If you uncomment this make sure to uncomment the code above where NormalShader is defined
-      NormalsShader.Bind();
-      NormalsShader.setUniformMat4f("model",model);
-      NormalsShader.setUniformMat4f("view",view);
-      NormalsShader.setUniformMat4f("proj",proj);   
-
-      terrainVA.Bind();
-      ib.Bind();
-      glDrawElements(GL_TRIANGLES,255 * 255 * 6,GL_UNSIGNED_INT,nullptr);
-*/
 
 
 
