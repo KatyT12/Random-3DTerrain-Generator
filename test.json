@@ -1,0 +1,27 @@
+{
+   "perlinnoise" : 
+   {
+      "bias" : 1.2,
+      "octaves" : 6,
+      "seed" : 121232
+   },
+   "dimensions":
+   {
+      "x":1000,
+      "y":1000,
+      "max_height":30,
+      "posX": -20,
+      "posY": 30,
+      "offset":0.2
+   },
+   "colors":
+   {
+      "staticColor": false,
+      "texture": false,
+      "textureLocation": "res/textures/marble.png",
+      "color1": [0.5,1,1],
+      "color2": [0.5,0.3,0.8]
+
+
+   }
+}

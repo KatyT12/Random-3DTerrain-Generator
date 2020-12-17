@@ -1,0 +1,4 @@
+/home/katy/programming/git/terrain/test/Build/CMakeFiles/rebuild_cache.dir
+/home/katy/programming/git/terrain/test/Build/CMakeFiles/edit_cache.dir
+/home/katy/programming/git/terrain/test/Build/CMakeFiles/main.dir
+/home/katy/programming/git/terrain/test/Build/CMakeFiles/LibsModule.dir
