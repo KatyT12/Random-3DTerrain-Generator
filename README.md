@@ -1,9 +1,10 @@
 This is a program that generates a random terrain. random_terrain.h and random_terrain.cpp are doing most of this.
 
 You create a terrain in the main program by calling the constructor and providing the location of a json file or none if you would like the default settings
-Then call the init() function on the object and this function will actually make the vertex buffer, index buffer and send it over to the GPU if everything is working
 
-I have tried to make it as configurable as possible. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
+Then call .init() on the object and that will generate the vertex buffer and index buffer and do some other things depending on the configuration. To Draw just call .Draw(). You will have to set uniforms for the shader before drawing however (which is why the shader member in random_terrain.h is public) because I haven't implemented a way for random_terrain.cpp to set the uniforms itself. 
+
+I have tried to make it quite easy to configure since for most changes you can simply edit the .json file without having to build the program again. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
 
 
 ## Building the program
