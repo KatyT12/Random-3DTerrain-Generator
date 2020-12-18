@@ -103,8 +103,8 @@ void Terrain::init()
     setLehmer((uint32_t) config_struct.seed);
     
    
-    float map[config_struct.x * config_struct.y];
-    float seeds[config_struct.x * config_struct.y];
+    float* map = new float[config_struct.x * config_struct.y];
+    float* seeds = new float[config_struct.x * config_struct.y];
     
     for(int i = 0; i < config_struct.x*config_struct.y;i++)
     {
@@ -211,6 +211,9 @@ void Terrain::init()
     GLCall(glBindVertexArray(0));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
+
+    delete map;
+    delete seeds;
 
 
     delete terrainIB;
