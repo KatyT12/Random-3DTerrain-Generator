@@ -6,6 +6,9 @@ Then call .init() on the object and that will generate the vertex buffer and ind
 
 I have tried to make it quite easy to configure since for most changes you can simply edit the .json file without having to build the program again. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
 
+The largest I have made the terrain is 10000 * 10000 vertices which does work however it takes about half a minuete for it to load everything in
+
+Also note that when vertices are very cramped together in the terrain the collision detection does not work very well unless you lower the speed
 
 ## Building the program
 
