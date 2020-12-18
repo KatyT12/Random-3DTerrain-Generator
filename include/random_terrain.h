@@ -20,6 +20,12 @@ struct Config
     float posY = 0.0f;
     float offset = 0.2f;
 
+
+    /* This mostly determines how the index buffer will be written to and determines the default primitive in the Draw function if you don't pass any paramters.
+    Note that if you set this to GL_POINTS for example and in the Draw function give a paramter of GL_TRIANGLES you will get a black screen because specifying GL_POINTS
+    means that it will not generate an index buffer, if you want to have both triangles and points then specify as GL_TRIANGLES and pass GL_POINTS to Draw() when you  want to draw points*/
+    GLenum primitive = GL_TRIANGLES;
+
     bool staticColor = false;
     bool texture = false;
     std::string textureLocation = "";
@@ -35,6 +41,8 @@ struct Config
 class Terrain
 {
     public:
+
+    
         Terrain(std::string config_file = "");
         ~Terrain();
         
@@ -43,7 +51,7 @@ class Terrain
         inline int getVao() const {return vao;}
         inline int getIb() const {return ib;}
 
-        void Draw(GLenum primitive = GL_TRIANGLES);
+        void Draw(GLenum primitive = -1);
 
         float getTerrainHeight(float x, float y);
 
@@ -66,13 +74,15 @@ class Terrain
         void determineColAttrib(float *& buffer,int place);
         void determineTexAttrib(float *& buffer,int x, int y, int place);
 
+        void indexBufferTriangles(unsigned int*& buffer);
+        void indexBufferLines(unsigned int*& buffer);
+
 
 
         Json::Value* configuration;
         Config config_struct;
         float* height_map;
 
-        
 
 
 };

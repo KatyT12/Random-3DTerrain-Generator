@@ -57,6 +57,15 @@ void Terrain::read_config_file(std::string& name)
 
     config_struct.offset = dimensions["offset"].asFloat();
 
+    if(dimensions["primitive"])
+    {
+        /*Only these three primitives for now, may add more in the future*/
+        if (dimensions["primitive"].asString() == "GL_POINTS") config_struct.primitive = GL_POINTS;
+        if (dimensions["primitive"].asString() == "GL_TRIANGLES") config_struct.primitive = GL_TRIANGLES;
+        if (dimensions["primitive"].asString() == "GL_LINES") config_struct.primitive = GL_LINES;
+    }
+
+
     auto colors = temp["colors"];
 
 
@@ -165,29 +174,15 @@ void Terrain::init()
         }
     }
 
-
-    unsigned int *terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; //Something wrong here
-
-    int place = 0;
-    for(int x = 0; x < config_struct.x-1; x++)
-    {
-
-        for(int y=0; y < config_struct.y-1;y++)
-        {   
-            
-            terrainIB[place] = x*config_struct.y + y;
-            terrainIB[place + 1] = (x+1)*config_struct.y + y;
-            terrainIB[place + 2] = (x+1)*config_struct.y + y+1;
-
-            terrainIB[place + 3] = x*config_struct.y + y;
-            terrainIB[place + 4] = x*config_struct.y + y+1;
-            terrainIB[place + 5] = (x+1)*config_struct.y + y+1;
-
-            place += 6;
-
-        }
-
-    }
+    unsigned int* terrainIB;
+    
+    //There is no need for an index buffer if we are just drawing the points
+    if(config_struct.primitive != GL_POINTS) terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; //Something wrong here
+    
+    
+    if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
+    else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
+    
 
 
     GLCall(glGenVertexArrays(1,&vao));
@@ -204,20 +199,28 @@ void Terrain::init()
     GLCall(glEnableVertexAttribArray(1));
     GLCall(glVertexAttribPointer(1,nVertexFloats-3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)(3*sizeof(float))));
     
-    GLCall(glGenBuffers(1,&ib));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib));
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,(config_struct.x-1)*(config_struct.y-1)*6*sizeof(unsigned int),&terrainIB[0],GL_STATIC_DRAW));
+
+    if(config_struct.primitive != GL_POINTS)
+    {
+        GLCall(glGenBuffers(1,&ib));
+        GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib));
+        GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,(config_struct.x-1)*(config_struct.y-1)*6*sizeof(unsigned int),&terrainIB[0],GL_STATIC_DRAW));
+    }
+
+
 
     GLCall(glBindVertexArray(0));
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
+
 
     delete map;
     delete seeds;
 
 
-    delete terrainIB;
     delete vbTerrain;
+    if(config_struct.primitive != GL_POINTS) delete terrainIB;
+
 
 }
 
@@ -285,7 +288,7 @@ float Terrain::barryCentric(std::vector<float> p1, std::vector<float> p2, std::v
 
 void Terrain::determineColAttrib(float*& buffer,int place)
 {
-        float point_height = (buffer[place + 1]-config_struct.height/(15/7))/3.0f;
+        float point_height = (buffer[place + 1]-config_struct.height/(15/7))/4.0f;
 
        buffer[place+3] = interpolateFloat(config_struct.color1[0],config_struct.color2[0],point_height);
             buffer[place+4] = interpolateFloat(config_struct.color1[1],config_struct.color2[1],point_height);
@@ -316,6 +319,9 @@ void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)
 
 void Terrain::Draw(GLenum primitive)
 {
+    if(primitive == -1) primitive = config_struct.primitive;
+
+
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
 
@@ -328,12 +334,68 @@ void Terrain::Draw(GLenum primitive)
 
     }
 
+    if(primitive != GL_POINTS)
+    {
+        glDrawElements(primitive,config_struct.x * config_struct.y * 6,GL_UNSIGNED_INT,nullptr);
+    }
+    else
+    {
+        glDrawArrays(primitive,0,config_struct.x * config_struct.y);
+    }
+    
 
-    glDrawElements(primitive,config_struct.x * config_struct.y * 6,GL_UNSIGNED_INT,nullptr);
 
 }
 
+void Terrain::indexBufferTriangles(unsigned int*& buffer)
+{
+    int place = 0;
+    for(int x = 0; x < config_struct.x-1; x++)
+    {
 
+        for(int y=0; y < config_struct.y-1;y++)
+        {   
+            
+            buffer[place] = x*config_struct.y + y;
+            buffer[place + 1] = (x+1)*config_struct.y + y;
+            buffer[place + 2] = (x+1)*config_struct.y + y+1;
+
+            buffer[place + 3] = x*config_struct.y + y;
+            buffer[place + 4] = x*config_struct.y + y+1;
+            buffer[place + 5] = (x+1)*config_struct.y + y+1;
+
+            place += 6;
+
+        }
+
+    }
+
+}
+
+void Terrain::indexBufferLines(unsigned int*& buffer)
+{
+    int place = 0;
+    for(int x = 0; x < config_struct.x-1; x++)
+    {
+
+        for(int y=0; y < config_struct.y-1;y++)
+        {   
+            
+            buffer[place] = x*config_struct.y + y;
+            buffer[place + 1] = (x+1)*config_struct.y + y;
+            
+            buffer[place + 2] = x*config_struct.y + y;
+            buffer[place + 3] = x*config_struct.y + y+1;
+
+            buffer[place + 4] = x*config_struct.y + y;
+            buffer[place + 5] = (x+1)*config_struct.y + y+1;
+
+            place += 6;
+
+        }
+
+    }
+}
 
 /* old code i am too scared to delete incase i may need it again*/
 

@@ -2,7 +2,7 @@
    "perlinnoise" : 
    {
       "bias" : 1.2,
-      "octaves" : 6,
+      "octaves" : 9,
       "seed" : 121232
    },
    "dimensions":
@@ -12,22 +12,23 @@
       "max_height":30,
       "posX": -20,
       "posY": 30,
-      "offset":0.2
+      "offset":0.4,
+      "primitive": "GL_LINES"
    },
    "colors":
    {
       "staticColor": false,
       
-      "texture": true,
-      "textureLocation": "res/textures/marble.png",
+      "texture": false,
+      "textureLocation": "res/textures/minecraft.png",
       "textureSlot": 2,
 
-      "color1": [0.5,1,1],
-      "color2": [0.5,0.3,0.8]
+      "color1": [0.5,0.8,0.3],
+      "color2": [0.8,0.3,0.2]
    },
 
    "shader":
    {
-      "shaderLocation": "res/shaders/basic.shader"
+      "shaderLocation": "res/shaders/color2.shader"
    }
 }
