@@ -19,10 +19,12 @@ Terrain::Terrain(std::string config_file)
 
     if(config_struct.texture)
     {
-        terrainTexture.InitTexture(config_struct.textureLocation);
+        terrainTexture.InitTexture(config_struct.textureLocation,config_struct.wrapMode);
     }
 
     terrainShader.makeShader(config_struct.shaderLocation);
+    if(config_struct.trees) treeShader.makeShader(config_struct.treeShader);
+
 }
 
 
@@ -66,6 +68,21 @@ void Terrain::read_config_file(std::string& name)
     }
 
 
+    config_struct.trees = dimensions["trees"].asBool();
+
+    if(config_struct.trees)
+    {
+        auto grid = dimensions["grid"];
+        
+        config_struct.gridX = grid["gridX"].asInt();
+        config_struct.gridY = grid["gridY"].asInt(); 
+
+        if(grid["chancePerGrid"]) config_struct.treeChance = grid["chancePerGrid"].asFloat();
+        if(grid["treeModel"]) config_struct.treeModel = grid["treeModel"].asString();
+        if(grid["treeShader"]) config_struct.treeShader = grid["treeShader"].asString();
+
+    }
+
     auto colors = temp["colors"];
 
 
@@ -77,6 +94,18 @@ void Terrain::read_config_file(std::string& name)
         if(colors["textureSlot"])
         {
             config_struct.textureSlot = colors["textureSlot"].asInt();
+        }
+       
+        config_struct.textureRepeat = colors["textureRepeat"].asBool();
+        if(config_struct.textureRepeat)
+        {
+    
+            auto textureRepeatConfig = colors["textureRepeatConfig"];
+            config_struct.xTextureRepeatOffset = textureRepeatConfig["xTextureRepeatOffset"].asFloat();
+            config_struct.yTextureRepeatOffset = textureRepeatConfig["yTextureRepeatOffset"].asFloat();
+            if(textureRepeatConfig["wrapMode"] == "GL_WRAP_BORDER") config_struct.wrapMode = GL_WRAP_BORDER;
+         
+
         }
     }
     else
@@ -221,6 +250,12 @@ void Terrain::init()
     delete vbTerrain;
     if(config_struct.primitive != GL_POINTS) delete terrainIB;
 
+    if(config_struct.trees)
+    {
+        genTerrainTrees();
+        tree.loadModel(config_struct.treeModel);
+
+    }
 
 }
 
@@ -309,11 +344,23 @@ void Terrain::determineColAttrib(float*& buffer,int place)
 
 void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)
 {
-    float xBlend = (float)x/(config_struct.x-1);
-    float yBlend = (float)y/(config_struct.y-1);
+   if(!config_struct.textureRepeat)
+    {
+        float xBlend = (float)x/(config_struct.x-1);
+        float yBlend = (float)y/(config_struct.y-1);
 
-    buffer[place+3] = yBlend;
-    buffer[place+4] = xBlend;
+        buffer[place+3] = yBlend;
+        buffer[place+4] = xBlend;
+    }
+    else
+    {
+        float xLocationInSquare = ((float)x/config_struct.xTextureRepeatOffset - (int)(x/config_struct.xTextureRepeatOffset));
+        float yLocationInSquare = ((float)y/config_struct.yTextureRepeatOffset - (int)(y/config_struct.yTextureRepeatOffset));
+
+
+        buffer[place+3] = xLocationInSquare;
+        buffer[place+4] = yLocationInSquare;
+    }
 }
 
 
@@ -343,6 +390,23 @@ void Terrain::Draw(GLenum primitive)
         glDrawArrays(primitive,0,config_struct.x * config_struct.y);
     }
     
+    if(config_struct.trees)
+    {
+        treeShader.Bind();
+        for(int i = 0; i < treePositions.size(); i++)
+        {
+
+            float positionX = ((treePositions[i][0] * config_struct.gridX) + config_struct.gridX/2) * config_struct.offset;
+            float positionZ = ((treePositions[i][1] * config_struct.gridY) + config_struct.gridY/2) * config_struct.offset * -1;
+            float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
+
+            treeShader.setUniformMat4f("model",glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+            tree.Draw(treeShader,false);
+            
+        }
+        treeShader.UnBind();
+
+    }
 
 
 }
@@ -391,6 +455,28 @@ void Terrain::indexBufferLines(unsigned int*& buffer)
             buffer[place + 5] = (x+1)*config_struct.y + y+1;
 
             place += 6;
+
+        }
+
+    }
+}
+
+
+void Terrain::genTerrainTrees()
+{
+    int gridsX = config_struct.x / config_struct.gridX;
+    int gridsY = config_struct.y / config_struct.gridY;
+
+
+    for(int x = 0; x < gridsX; x++)
+    {
+        for(int y = 0; y < gridsY; y++)
+        {
+            int result = randint(0,config_struct.treeChance);
+            if(result == 1)
+            {
+                treePositions.push_back({x,y});
+            }
 
         }
 

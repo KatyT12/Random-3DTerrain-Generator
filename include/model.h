@@ -22,7 +22,7 @@
 /* There is a struct in mesh.h called Texturez which was changed from Texture because I have included a texture class*/
 
 
-unsigned int TextureFromFile(std::string path, std::string &directory);
+inline unsigned int TextureFromFile(std::string path, std::string &directory);
 
 
 
@@ -33,6 +33,7 @@ class Model
         {
             loadModel(path);
         }
+        Model(){};
         void Draw(shader &sha,bool simple=true)
         {
             for(unsigned int i=0;i<meshes.size();i++)
@@ -43,9 +44,7 @@ class Model
 
       std::vector<Mesh> meshes;
     std::vector<Texturez> textures_loaded; 
-    private:
-      
-        std::string directory;
+
 
 
 
@@ -70,6 +69,10 @@ class Model
         *The returned mesh is then passed to the processMesh function that returns a Mesh object that we can store in the meshes list/vector.
         *Once all the meshes have been processed, we iterate through all of the node's children and call the same processNode function for each its children. 
         Once a node no longer has any children, the recursion stops. Then process assimp data into mesh class we have made in mesh.h */
+        private:
+      
+        std::string directory;
+        
         
         void processNode(aiNode *node,const aiScene *scene)
         {   

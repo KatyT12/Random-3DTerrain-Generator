@@ -1,10 +1,13 @@
 #pragma once
 #include "json_parser.h"
+
 #include "renderer.h"
 #include <vector>
 #include "Texture.h"
 #include "Random.h"
 #include "shader.h"
+#include "model.h"
+ 
 
 struct Config
 {
@@ -20,6 +23,15 @@ struct Config
     float posY = 0.0f;
     float offset = 0.2f;
 
+    bool trees = false;
+    int gridX = 50;
+    int gridY = 50;
+    std::string treeModel = "res/models/tree.obj";
+    std::string treeShader = "res/shaders/simple_model.shader";
+    float treeChance = 20; //It is 1 over this number so 1 in 20 chance
+
+
+
 
     /* This mostly determines how the index buffer will be written to and determines the default primitive in the Draw function if you don't pass any paramters.
     Note that if you set this to GL_POINTS for example and in the Draw function give a paramter of GL_TRIANGLES you will get a black screen because specifying GL_POINTS
@@ -30,6 +42,10 @@ struct Config
     bool texture = false;
     std::string textureLocation = "";
     int textureSlot = 0;
+    bool textureRepeat = false;
+    float xTextureRepeatOffset = 1.0f;
+    float yTextureRepeatOffset = 1.0f;
+    GLenum wrapMode = GL_REPEAT;
 
     std::vector<float> color1 = {0.317,0.149,0.149};
     std::vector<float> color2 = {0.239,0.576,0};
@@ -59,6 +75,7 @@ class Terrain
         float width;
         Texture terrainTexture;
         shader terrainShader;
+        shader treeShader;
 
     private:
         void read_config_file(std::string& name);
@@ -77,12 +94,16 @@ class Terrain
         void indexBufferTriangles(unsigned int*& buffer);
         void indexBufferLines(unsigned int*& buffer);
 
+        void genTerrainTrees();
 
 
         Json::Value* configuration;
         Config config_struct;
         float* height_map;
+        
 
+        Model tree;
+        std::vector<std::vector<int>> treePositions;
 
-
+        
 };

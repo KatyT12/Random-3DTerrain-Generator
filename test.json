@@ -1,7 +1,7 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.2,
+      "bias" : 1.6,
       "octaves" : 9,
       "seed" : 121232
    },
@@ -10,18 +10,38 @@
       "x":1000,
       "y":1000,
       "max_height":30,
-      "posX": -20,
-      "posY": 30,
+      "posX": 0,
+      "posY": 0,
       "offset":0.4,
-      "primitive": "GL_LINES"
+      "primitive": "GL_TRIANGLES",
+
+      "trees": true,
+      "grid":
+      {
+         "chancePerGrid": 10,
+         "treeModel": "res/models/tree.obj",
+         "treeShader": "res/shaders/simple_model.shader",
+   
+         "gridX": 50,
+         "gridY": 50
+      }
+   
+
    },
    "colors":
    {
       "staticColor": false,
       
       "texture": false,
-      "textureLocation": "res/textures/minecraft.png",
+      "textureLocation": "res/textures/terrainGrass.jpg",
       "textureSlot": 2,
+      
+      "textureRepeat": true,
+      "textureRepeatConfig":
+      {
+         "xTextureRepeatOffset": 50.0,
+         "yTextureRepeatOffset": 50.0
+      },
 
       "color1": [0.5,0.8,0.3],
       "color2": [0.8,0.3,0.2]
