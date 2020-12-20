@@ -34,13 +34,22 @@ class Model
             loadModel(path);
         }
         Model(){};
+        
         void Draw(shader &sha,bool simple=true)
         {
-            for(unsigned int i=0;i<meshes.size();i++)
+            for(unsigned int i=0;i< meshes.size();i++)
             {
                 meshes[i].draw(sha,simple);
             }
         }
+
+       void DrawInstanced(shader &sha, int instances, bool simple = true)
+       {
+            for(unsigned int i=0;i< meshes.size();i++)
+            {
+                meshes[i].draw(sha,simple,instances);
+            }
+       }
 
       std::vector<Mesh> meshes;
     std::vector<Texturez> textures_loaded; 

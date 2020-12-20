@@ -28,6 +28,8 @@ struct Config
     int gridY = 50;
     std::string treeModel = "res/models/tree.obj";
     std::string treeShader = "res/shaders/simple_model.shader";
+    bool instancing = false; //If you set this to true make sure to use a shader that works with instancing and vice versa
+   
     float treeChance = 20; //It is 1 over this number so 1 in 20 chance
 
 
@@ -84,6 +86,10 @@ class Terrain
         unsigned int vao;
         unsigned int vbo;
         unsigned int ib;
+        unsigned int modelMatrixBuffer; //If instancing for trees is true this will be the id for that buffer
+
+
+
 
         float barryCentric(std::vector<float> p1, std::vector<float> p2, std::vector<float> p3, std::vector<float> pos) const;
         
@@ -97,13 +103,15 @@ class Terrain
         void genTerrainTrees();
 
 
+        void newColors();
+
         Json::Value* configuration;
         Config config_struct;
         float* height_map;
         
 
         Model tree;
-        std::vector<std::vector<int>> treePositions;
+        std::vector<glm::mat4> treeModelMatrices;
 
         
 };

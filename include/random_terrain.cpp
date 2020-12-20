@@ -80,6 +80,7 @@ void Terrain::read_config_file(std::string& name)
         if(grid["chancePerGrid"]) config_struct.treeChance = grid["chancePerGrid"].asFloat();
         if(grid["treeModel"]) config_struct.treeModel = grid["treeModel"].asString();
         if(grid["treeShader"]) config_struct.treeShader = grid["treeShader"].asString();
+        config_struct.instancing = grid["instancing"].asBool();
 
     }
 
@@ -252,8 +253,11 @@ void Terrain::init()
 
     if(config_struct.trees)
     {
-        genTerrainTrees();
         tree.loadModel(config_struct.treeModel);
+
+        //This needs to be after the model is generated for instancing to work
+        genTerrainTrees();
+
 
     }
 
@@ -369,6 +373,7 @@ void Terrain::Draw(GLenum primitive)
     if(primitive == -1) primitive = config_struct.primitive;
 
 
+
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
 
@@ -393,17 +398,22 @@ void Terrain::Draw(GLenum primitive)
     if(config_struct.trees)
     {
         treeShader.Bind();
-        for(int i = 0; i < treePositions.size(); i++)
+        
+        if(!config_struct.instancing)
         {
+            for(int i = 0; i < treeModelMatrices.size(); i++)
+            {
+                treeShader.setUniformMat4f("model",treeModelMatrices[i]);
+                tree.Draw(treeShader,false);
 
-            float positionX = ((treePositions[i][0] * config_struct.gridX) + config_struct.gridX/2) * config_struct.offset;
-            float positionZ = ((treePositions[i][1] * config_struct.gridY) + config_struct.gridY/2) * config_struct.offset * -1;
-            float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
-
-            treeShader.setUniformMat4f("model",glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
-            tree.Draw(treeShader,false);
-            
+            }
         }
+        else
+        {
+            tree.DrawInstanced(treeShader,treeModelMatrices.size(),false);
+        }
+
+
         treeShader.UnBind();
 
     }
@@ -411,6 +421,7 @@ void Terrain::Draw(GLenum primitive)
 
 }
 
+//For primitive GL_TRIANGLES
 void Terrain::indexBufferTriangles(unsigned int*& buffer)
 {
     int place = 0;
@@ -436,6 +447,7 @@ void Terrain::indexBufferTriangles(unsigned int*& buffer)
 
 }
 
+//For primitive GL_LINES
 void Terrain::indexBufferLines(unsigned int*& buffer)
 {
     int place = 0;
@@ -461,13 +473,13 @@ void Terrain::indexBufferLines(unsigned int*& buffer)
     }
 }
 
-
+//Determine where in terrain the trees will be
 void Terrain::genTerrainTrees()
 {
     int gridsX = config_struct.x / config_struct.gridX;
     int gridsY = config_struct.y / config_struct.gridY;
 
-
+    std::vector<std::vector<int>> treePositions;
     for(int x = 0; x < gridsX; x++)
     {
         for(int y = 0; y < gridsY; y++)
@@ -476,11 +488,79 @@ void Terrain::genTerrainTrees()
             if(result == 1)
             {
                 treePositions.push_back({x,y});
+                
+                float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + config_struct.gridX/2) * config_struct.offset;
+                float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + config_struct.gridY/2) * config_struct.offset * -1;
+                float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
+
+                treeModelMatrices.push_back(glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+
             }
 
         }
 
     }
+    if(config_struct.instancing)
+    {
+        glGenBuffers(1,&modelMatrixBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER,modelMatrixBuffer);
+        glBufferData(GL_ARRAY_BUFFER,treeModelMatrices.size() * sizeof(glm::mat4),&treeModelMatrices[0],GL_STATIC_DRAW);
+
+
+        for(int i = 0; i < tree.meshes.size(); i++)
+        {
+            unsigned int vao = tree.meshes[i].VAO;
+            glBindVertexArray(vao);
+
+            std::size_t sizeVec4 = sizeof(glm::vec4);
+            glEnableVertexAttribArray(3); //Assuming that the third and onwards attribute is already empty and that the shader is using the 3rd attrib for it. May need to make this a setting in the config
+            glVertexAttribPointer(3,4,GL_FLOAT,GL_FALSE,4 * sizeVec4,(void*)0);
+
+            glEnableVertexAttribArray(4); 
+            glVertexAttribPointer(4,4,GL_FLOAT,GL_FALSE,4 * sizeVec4,(void*) (1 * sizeVec4));
+
+            glEnableVertexAttribArray(5); 
+            glVertexAttribPointer(5,4,GL_FLOAT,GL_FALSE,4 * sizeVec4,(void*) (2 * sizeVec4));
+
+            glEnableVertexAttribArray(6); 
+            glVertexAttribPointer(6,4,GL_FLOAT,GL_FALSE,4 * sizeVec4,(void*) (3 * sizeVec4));
+
+            glVertexAttribDivisor(3,1); //Every instance rather than every vertex shader iteration
+            glVertexAttribDivisor(4,1);
+            glVertexAttribDivisor(5,1);
+            glVertexAttribDivisor(6,1);
+
+            glBindVertexArray(0);
+        }
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+
+    }
+    
+
+
+}
+
+
+void Terrain::newColors()
+{
+    float* newColorMap = new float[config_struct.x * config_struct.y];
+    float* newSeedMap = new float[config_struct.x * config_struct.y]; 
+    for(int i = 0; i < config_struct.x * config_struct.y;i++)
+    {
+        newSeedMap[i] = randdouble(0,1);
+    }
+    perlInNoise2D(config_struct.x,config_struct.y,newSeedMap,config_struct.octaves,1.4,newColorMap);
+
+    for(int i = 0; i < config_struct.x * config_struct.y;i++)
+    {
+        glm::vec3 col = {0,newColorMap[i],0};
+        glBufferSubData(GL_ARRAY_BUFFER,i*(6*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+    }
+
+    
+
+
+    delete newColorMap;
 }
 
 /* old code i am too scared to delete incase i may need it again*/

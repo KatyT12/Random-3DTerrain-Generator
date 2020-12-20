@@ -52,7 +52,7 @@ class Mesh
             setUpMesh();
 
         }
-        void draw(shader &sha,bool simple=true)
+        void draw(shader &sha,bool simple=true, int instances = -1)
         {
             //GLCall(glBindVertexArray(VAO));
             //GLCall(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
@@ -100,6 +100,7 @@ class Mesh
                     sha.setUniform1f("myTexture.shininess",32);
                     sha.setUniform1i("tex",1);
                     
+
                     GLCall(glActiveTexture(GL_TEXTURE0));
                     //sha.setUniform1f(("material." + name + number).c_str(), i);
                     //GLCall(glBindTexture(GL_TEXTURE_2D,textures[i].id));
@@ -109,26 +110,34 @@ class Mesh
                 //Set the materials if there are no textures
                 if(materials.size() > 0 && textures.size() < 1)
                 {
-
                     sha.setUniform1i("tex",0);
                     sha.setUniformVec3f("material.diffuse",materials[0].Diffuse); /** glm::vec3(0.5,0.5,0.5)*/
                     sha.setUniformVec3f("material.specular",materials[0].Specular);
                     sha.setUniform1f("material.shininess",materials[0].Shininess);
-
                 }
-                
+           
             // GLCall(glActiveTexture(GL_TEXTURE0));
                 GLCall(glBindVertexArray(VAO));
             
                 
+                if(instances == -1)
+                {
+                    GLCall(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
+                }
+                else
+                {
+                    GLCall(glDrawElementsInstanced(GL_TRIANGLES,indices.size(),GL_UNSIGNED_INT,0,instances));
+                }
+                
 
-                GLCall(glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0));
                 GLCall(glBindVertexArray(0));
                 
 
                 }
             }
             
+           
+
         unsigned int VAO;
     private:
         
