@@ -18,10 +18,11 @@
       "trees": true,
       "grid":
       {
-         "chancePerGrid": 10,
+         "chancePerGrid": 15,
          "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/simple_model.shader",
-   
+         "instancing": false,
+
          "gridX": 50,
          "gridY": 50
       }
@@ -49,6 +50,7 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/color2.shader"
+      "shaderLocation": "res/shaders/color2.shader",
+      "textureUniformName": "u_Texture"
    }
 }

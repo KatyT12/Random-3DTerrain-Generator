@@ -129,6 +129,7 @@ void Terrain::read_config_file(std::string& name)
     if(shaderConfig["shaderLocation"])
     {
         config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
+        if(shaderConfig["textureUniformName"]) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
     }
 
 
@@ -382,7 +383,7 @@ void Terrain::Draw(GLenum primitive)
     if(config_struct.texture)
     {
         terrainTexture.Bind(config_struct.textureSlot);
-        terrainShader.setUniform1i("u_Texture",config_struct.textureSlot); //Will need to have the name of the uniform set in confguration but hard coded for now
+        terrainShader.setUniform1i(config_struct.textureUniformName,config_struct.textureSlot); 
 
     }
 
@@ -395,6 +396,7 @@ void Terrain::Draw(GLenum primitive)
         glDrawArrays(primitive,0,config_struct.x * config_struct.y);
     }
     
+    terrainShader.UnBind();
     if(config_struct.trees)
     {
         treeShader.Bind();
@@ -563,37 +565,3 @@ void Terrain::newColors()
     delete newColorMap;
 }
 
-/* old code i am too scared to delete incase i may need it again*/
-
-
-/* 
-            float point_height = (vbTerrain[xPlace + 1]-config_struct.height/(15/7))/3.0f;
-
-            vbTerrain[xPlace+3] = interpolateFloat(config_struct.color1[0],config_struct.color2[0],point_height);
-            vbTerrain[xPlace+4] = interpolateFloat(config_struct.color1[1],config_struct.color2[1],point_height);
-            vbTerrain[xPlace+5] = interpolateFloat(config_struct.color1[2],config_struct.color2[2],point_height);
-
-            if(config_struct.staticColor)
-            {
-                if(xPlace % 18 != 0)
-                {
-                    vbTerrain[xPlace+3] = vbTerrain[xPlace - 3];
-                    vbTerrain[xPlace+4] = vbTerrain[xPlace - 2];
-                    vbTerrain[xPlace+5] = vbTerrain[xPlace - 1];
-
-                }
-            }
-*/
-
-
-
-/*
-    std::cout << "\nlocalX: " << localX << " localX: " << localX << "\n";
-    std::cout << "gridX: " << gridX << " gridY: " << gridY << "\n";
-    std::cout << "xCoord: " << xCoord << " yCoord: " << yCoord << "\n";
-
-...
-    std::cout << "heightmap " << answer << "\n\n\n";
-
-
-*/
