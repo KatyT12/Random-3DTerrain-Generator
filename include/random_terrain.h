@@ -53,7 +53,7 @@ struct Config
     std::vector<float> color2 = {0.239,0.576,0};
 
     //This shader doesn't take in texture coordinates it just takes colors. for textures change to a shader such as basic.shader or your own shader
-    std::string shaderLocation = "res/shader/color2.shader"; 
+    std::string shaderLocation = "res/shaders/color2.shader"; 
     std::string textureUniformName = "u_Texture"; 
 
 };  
