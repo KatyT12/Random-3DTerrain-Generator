@@ -39,8 +39,45 @@ This includes:
 
 And likely some other libraries I am forgetting
 
+
+## Configuration
+
+To give your own configuration for the terrain you need to provide your own .json file which you give the path of to the construcor
+of Terrain.
+
+test.json is an example of a configuration file and it includes all the options available but it is not necessary to set every option.
+
+Some options have to be included in your json file for the program to work.
+These options are:
+    
+    . bias
+    . octaves
+    . seed 
+    . x (The width of the terrain)
+    . y (The lenght of the terrain)
+    . offset (space between vertices)
+
+All the other options do not have to be set for the program to work as they will be given the defaults which you can see in random_terrain.h
+
+the trees options should be true or false (default is false) and if set to true it will also draw trees on the terrain randomly. This can also
+be configured in the grid option.
+
+
+You must make sure that your configuration matches for example if you set texture to true and provide a texure make sure the shader you give also accepts a texture.
+
+When making the vertex buffer for the terrain it sets the texture coordinates or colors (depending on configuration) as the second vertex attribute so the shaders you use must accept
+them as index 1. I plan to also have these as options in the config. There is an option in the shaderConfig called textureUniformName which you should set the uniform name to match the one in the shader
+
+
+Note that the main.cpp file is responsible for setting most of the uniforms with the exception of the texture of the terrain (if there is one),
+textures and model matrices of the trees if trees is set to true.
+
+
+
 ## TODO:
-    . Better collisiom detection
     . Lighting configuration options
     . Work better with textures
     . Have an options for a normals vertex attribute
+
+
+
