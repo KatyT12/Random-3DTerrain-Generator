@@ -22,7 +22,15 @@ Terrain::Terrain(std::string config_file)
         terrainTexture.InitTexture(config_struct.textureLocation,config_struct.wrapMode);
     }
 
-    terrainShader.makeShader(config_struct.shaderLocation);
+    if(config_struct.geometryShader)
+    {
+        terrainShader.makeShader(config_struct.shaderLocation,true);
+    }
+    else
+    {    
+        terrainShader.makeShader(config_struct.shaderLocation);
+    }
+    
     if(config_struct.trees) treeShader.makeShader(config_struct.treeShader);
 
 }
@@ -32,6 +40,7 @@ Terrain::~Terrain()
 {
     configuration->empty();
     delete configuration;
+    
     delete height_map;
 }
 
@@ -67,6 +76,7 @@ void Terrain::read_config_file(std::string& name)
         if (dimensions["primitive"].asString() == "GL_LINES") config_struct.primitive = GL_LINES;
     }
 
+    config_struct.genNormals = dimensions["genNormals"].asBool();
 
     config_struct.trees = dimensions["trees"].asBool();
 
@@ -130,6 +140,7 @@ void Terrain::read_config_file(std::string& name)
     {
         config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
         if(shaderConfig["textureUniformName"]) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
+        config_struct.geometryShader = shaderConfig["geometryShader"].asBool();
     }
 
 
@@ -159,12 +170,16 @@ void Terrain::init()
     if(config_struct.texture)nVertexFloats = 5;
     else nVertexFloats = 6;
 
+    //Attrin index is the attribute of the  texCoords/colors
+    int attribIndex;
+    if(config_struct.genNormals) attribIndex = 2;
+    else attribIndex = 1;
 
 
-    //perlInNoise2D(256,256,seeds,7,2,map);
     perlInNoise2D(config_struct.x,config_struct.y,seeds,config_struct.octaves,config_struct.bias,map);
 
     int offset = 0.4;
+    
     int stride = nVertexFloats;
 
     //float vbTerrain[256*256 * 6];
@@ -174,8 +189,10 @@ void Terrain::init()
 
     float *vbTerrain = new float[config_struct.x*config_struct.y * nVertexFloats];
 
+
+
+
     //Colors to blend between. Should be set in config but this is just for testing
-    
     
     for(int x=0; x < config_struct.x; x++)
     {
@@ -214,7 +231,7 @@ void Terrain::init()
     if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
     else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
     
-
+    
 
     GLCall(glGenVertexArrays(1,&vao));
     GLCall(glBindVertexArray(vao));
@@ -224,11 +241,13 @@ void Terrain::init()
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,vbo));
     GLCall(glBufferData(GL_ARRAY_BUFFER,config_struct.x*config_struct.y*nVertexFloats*sizeof(float),&vbTerrain[0],GL_STATIC_DRAW));
 
+
+
     GLCall(glEnableVertexAttribArray(0));
     GLCall(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)0));
 
-    GLCall(glEnableVertexAttribArray(1));
-    GLCall(glVertexAttribPointer(1,nVertexFloats-3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)(3*sizeof(float))));
+    GLCall(glEnableVertexAttribArray(attribIndex));
+    GLCall(glVertexAttribPointer(attribIndex,nVertexFloats-3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)(3*sizeof(float))));
     
 
     if(config_struct.primitive != GL_POINTS)
@@ -244,6 +263,8 @@ void Terrain::init()
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
 
+
+    if(config_struct.genNormals) generateNormals(vbTerrain,terrainIB);
 
     delete map;
     delete seeds;
@@ -437,9 +458,9 @@ void Terrain::indexBufferTriangles(unsigned int*& buffer)
             buffer[place + 1] = (x+1)*config_struct.y + y;
             buffer[place + 2] = (x+1)*config_struct.y + y+1;
 
-            buffer[place + 3] = x*config_struct.y + y;
-            buffer[place + 4] = x*config_struct.y + y+1;
             buffer[place + 5] = (x+1)*config_struct.y + y+1;
+            buffer[place + 4] = x*config_struct.y + y+1;
+            buffer[place + 3] = x*config_struct.y + y;
 
             place += 6;
 
@@ -565,3 +586,52 @@ void Terrain::newColors()
     delete newColorMap;
 }
 
+/* This still does not work properly and i need to fix it*/
+
+void Terrain::generateNormals(float* vertexBuffer, unsigned int* indexes)
+{
+    glm::vec3* normalArray = new glm::vec3[(config_struct.x-1) * (config_struct.y-1)];
+
+    int stride;
+    if (config_struct.texture) stride = 5*sizeof(float);
+    else stride = 6 * sizeof(float);
+
+
+    int place = 0;
+    for(int x =0; x < ((config_struct.x - 1) * (config_struct.y-1))/3; x++)
+    {
+        
+        glm::vec3 posA = {vertexBuffer[indexes[place] * stride],vertexBuffer[indexes[place] * stride + 1],vertexBuffer[indexes[place] * stride + 2]};
+        glm::vec3 posB = {vertexBuffer[indexes[place+1] * stride],vertexBuffer[indexes[place+1] * stride + 1],vertexBuffer[indexes[place+1] * stride + 2]};
+        glm::vec3 posC = {vertexBuffer[indexes[place+2] * stride],vertexBuffer[indexes[place+2] * stride + 1],vertexBuffer[indexes[place+2] * stride + 2]};
+
+        glm::vec3 vecA = posB - posA;
+        glm::vec3 vecB = posC - posA;
+
+        glm::vec3 normal = glm::normalize(glm::cross(vecA,vecB));
+
+        if (normal.y < 0) normal.y *= -1;
+        
+        std::cout << indexes[place+2] << "\n";
+        normalArray[indexes[place]] = normal;
+        normalArray[indexes[place+1]] = normal;
+        normalArray[indexes[place+2]] = normal;
+        place += 3;
+
+    }
+
+    GLCall(glGenBuffers(1,&normals));
+    
+    GLCall(glBindVertexArray(vao));
+    
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER,normals));
+    GLCall(glBufferData(GL_ARRAY_BUFFER,(config_struct.x-1) * (config_struct.y-1)*3*sizeof(float),&normalArray[0],GL_STATIC_DRAW));
+
+    GLCall(glEnableVertexAttribArray(1));
+    GLCall(glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0));
+
+    GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
+    glBindVertexArray(0);
+
+    delete normalArray;
+}
