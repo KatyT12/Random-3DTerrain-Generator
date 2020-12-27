@@ -30,6 +30,8 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f; 
 
 
+bool spacePressed = false;
+
 
 
 void mouse_callback(GLFWwindow* window, double mouseX, double mouseY)
@@ -95,7 +97,7 @@ int main(void)
 
     if(glewInit() != GLEW_OK)
     {
-	std::cout << "Error!" << std::endl;
+	    std::cout << "Error!" << std::endl;
     }	    
 	
 
@@ -114,9 +116,10 @@ int main(void)
 
     {
    
-
     Terrain terrain = Terrain("test.json");
     terrain.init();
+
+
 
 
 
@@ -132,7 +135,9 @@ int main(void)
     	
 
     //Telling the camera to try and detect collisions. This is very rough and only detects if there is a collision when the forward button is pressed (not any other button) but it is getting there
-    camera.setTerrain(&terrain); 
+    
+    
+    camera.setTerrain(&terrain);
 
 
 
@@ -152,14 +157,25 @@ int main(void)
         glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
 		glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
 		
-
+        
         terrain.terrainShader.Bind();
         terrain.terrainShader.setUniformMat4f("model",model);
         terrain.terrainShader.setUniformMat4f("proj",proj);
         terrain.terrainShader.setUniformMat4f("view",view);
+        
+        terrain.treeShader.Bind();
+        terrain.treeShader.setUniformMat4f("view",view);
+        terrain.treeShader.setUniformMat4f("proj",proj);
+        
+        
         terrain.Draw();
 
-
+        if(spacePressed)
+        {
+            std::vector<glm::vec3> colors = {glm::vec3(1.0f,0.0f,1.0f),glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,1.0f),glm::vec3(1.0f,0.0f,0.0f)};
+            terrain.newColors(colors);
+            spacePressed = false;
+        }
 
         glfwSwapBuffers(window);
 
@@ -194,6 +210,14 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboard(RIGHT, deltaTime);
     
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+
+        spacePressed = true;
+       
+    }
+
+
 
     //Just for debugging
     if(glfwGetKey(window,GLFW_KEY_0)==GLFW_PRESS)
