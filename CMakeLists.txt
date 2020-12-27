@@ -20,6 +20,8 @@ target_link_libraries(LibsModule dl)
 target_link_libraries(LibsModule Xinerama)
 target_link_libraries(LibsModule Xcursor)
 target_link_libraries(LibsModule GLEW)
+target_link_libraries(LibsModule assimp)
+
 
 target_link_libraries(LibsModule jsoncpp)
 
