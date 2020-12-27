@@ -263,7 +263,8 @@ void Terrain::init()
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
 
-
+    
+    
     if(config_struct.genNormals) generateNormals(vbTerrain,terrainIB);
 
     delete map;
@@ -420,7 +421,7 @@ void Terrain::Draw(GLenum primitive)
     terrainShader.UnBind();
     if(config_struct.trees)
     {
-        treeShader.Bind();
+        treeShader.Bind(); 
         
         if(!config_struct.instancing)
         {
@@ -512,8 +513,12 @@ void Terrain::genTerrainTrees()
             {
                 treePositions.push_back({x,y});
                 
-                float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + config_struct.gridX/2) * config_struct.offset;
-                float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + config_struct.gridY/2) * config_struct.offset * -1;
+                float xOffset = randdouble(0,config_struct.gridX);
+                float zOffset = randdouble(0,config_struct.gridY);
+
+
+                float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + xOffset) * config_struct.offset;
+                float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
                 float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
 
                 treeModelMatrices.push_back(glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
@@ -564,7 +569,7 @@ void Terrain::genTerrainTrees()
 }
 
 
-void Terrain::newColors()
+void Terrain::newColors(std::vector<glm::vec3>& colors)
 {
     float* newColorMap = new float[config_struct.x * config_struct.y];
     float* newSeedMap = new float[config_struct.x * config_struct.y]; 
@@ -574,14 +579,17 @@ void Terrain::newColors()
     }
     perlInNoise2D(config_struct.x,config_struct.y,newSeedMap,config_struct.octaves,1.4,newColorMap);
 
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
     for(int i = 0; i < config_struct.x * config_struct.y;i++)
     {
-        glm::vec3 col = {0,newColorMap[i],0};
+        glm::vec3 col = colors[(int)colors.size()*newColorMap[i]];
+
+
         glBufferSubData(GL_ARRAY_BUFFER,i*(6*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
     }
 
-    
-
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     delete newColorMap;
 }
