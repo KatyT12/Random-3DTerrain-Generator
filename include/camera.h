@@ -6,6 +6,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "random_terrain.h"
+#include <functional>
+
 
 enum movement {
 	FORWARD,
@@ -38,7 +40,10 @@ public:
 	glm::mat4 boxModel = glm::mat4(1.0f);
 	glm::vec4 boxPos = glm::vec4(0.0f,0.0f,0.1f,1.0f);
 
-	Terrain* terrain;
+	//Terrain* terrain;
+	
+	
+	
 	//Euler angles
 	float Yaw;
 	float Pitch;
@@ -59,12 +64,17 @@ public:
 
 	void moveObj(movement direction, float deltatime);
 
-	inline void setTerrain(Terrain* t)
+    Terrain* terrain;
+	float collisionOffset;
+
+	void setTerrain(Terrain* t)
 	{
 		terrain = t;
+		collisionOffset = terrain->getCollisionOffset();
 	}
-
-
+    
+    
+    
 
 
 };

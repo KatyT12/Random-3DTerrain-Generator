@@ -68,6 +68,8 @@ void Terrain::read_config_file(std::string& name)
 
     config_struct.offset = dimensions["offset"].asFloat();
 
+    if(!dimensions["collisionOffset"].isNull()) config_struct.collisionOffset = dimensions["collisionOffset"].asFloat();
+
     if(dimensions["primitive"])
     {
         /*Only these three primitives for now, may add more in the future*/

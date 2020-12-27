@@ -7,7 +7,8 @@
 #include "Random.h"
 #include "shader.h"
 #include "model.h"
- 
+
+
 
 struct Config
 {
@@ -22,6 +23,8 @@ struct Config
     float posX = 0.0f;
     float posY = 0.0f;
     float offset = 0.2f;
+
+    float collisionOffset = 0.25;
     GLenum primitive = GL_TRIANGLES;
     bool genNormals = false;
 
@@ -78,6 +81,13 @@ class Terrain
 
         float getTerrainHeight(float x, float y);
 
+        void newColors(std::vector<glm::vec3>& colors);
+
+        inline float getCollisionOffset()
+        {
+            return config_struct.collisionOffset;
+        }
+
         float length;
         float width;
         Texture terrainTexture;
@@ -110,7 +120,6 @@ class Terrain
         void genTerrainTrees();
         
 
-        void newColors();
 
         Json::Value* configuration;
         Config config_struct;
