@@ -70,7 +70,7 @@ void Terrain::read_config_file(std::string& name)
 
     if(!dimensions["collisionOffset"].isNull()) config_struct.collisionOffset = dimensions["collisionOffset"].asFloat();
 
-    if(dimensions["primitive"])
+    if(!dimensions["primitive"].isNull())
     {
         /*Only these three primitives for now, may add more in the future*/
         if (dimensions["primitive"].asString() == "GL_POINTS") config_struct.primitive = GL_POINTS;
@@ -89,9 +89,9 @@ void Terrain::read_config_file(std::string& name)
         config_struct.gridX = grid["gridX"].asInt();
         config_struct.gridY = grid["gridY"].asInt(); 
 
-        if(grid["chancePerGrid"]) config_struct.treeChance = grid["chancePerGrid"].asFloat();
-        if(grid["treeModel"]) config_struct.treeModel = grid["treeModel"].asString();
-        if(grid["treeShader"]) config_struct.treeShader = grid["treeShader"].asString();
+        if(!grid["chancePerGrid"].isNull()) config_struct.treeChance = grid["chancePerGrid"].asFloat();
+        if(!grid["treeModel"].isNull()) config_struct.treeModel = grid["treeModel"].asString();
+        if(!grid["treeShader"].isNull()) config_struct.treeShader = grid["treeShader"].asString();
         config_struct.instancing = grid["instancing"].asBool();
 
     }
@@ -104,7 +104,7 @@ void Terrain::read_config_file(std::string& name)
     if(config_struct.texture)
     {
         config_struct.textureLocation = colors["textureLocation"].asString();
-        if(colors["textureSlot"])
+        if(!colors["textureSlot"].isNull())
         {
             config_struct.textureSlot = colors["textureSlot"].asInt();
         }
@@ -123,13 +123,13 @@ void Terrain::read_config_file(std::string& name)
     }
     else
     {   
-        if(colors["color1"])
+        if(!colors["color1"].isNull())
         {
 
             Json::Value tmp = colors["color1"];
             config_struct.color1 = {tmp[0].asFloat(),tmp[1].asFloat(),tmp[2].asFloat()};
         }
-        if(colors["color2"])
+        if(!colors["color2"].isNull())
         {
 
             Json::Value tmp = colors["color2"];
@@ -138,10 +138,10 @@ void Terrain::read_config_file(std::string& name)
     }
     
     auto shaderConfig = temp["shader"];
-    if(shaderConfig["shaderLocation"])
+    if(!shaderConfig["shaderLocation"].isNull())
     {
         config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
-        if(shaderConfig["textureUniformName"]) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
+        if(!shaderConfig["textureUniformName"].isNull()) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
         config_struct.geometryShader = shaderConfig["geometryShader"].asBool();
     }
 
