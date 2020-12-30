@@ -1,5 +1,10 @@
 #pragma once
-#include <json/json.h>
+
+#ifdef ARCH
+    #include <json/json.h>
+#else
+    #include <jsoncpp/json/json.h>
+#endif
 #include <fstream>
 #include <string>
 #include <iostream>
