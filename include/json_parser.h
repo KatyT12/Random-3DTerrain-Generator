@@ -4,6 +4,7 @@
     #include <json/json.h>
 #else
     #include <jsoncpp/json/json.h>
+    #include <memory>
 #endif
 #include <fstream>
 #include <string>
