@@ -6,11 +6,11 @@ Then call .init() on the object and that will generate the vertex buffer and ind
 
 I have tried to make it quite easy to configure since for most changes you can simply edit the .json file without having to build the program again. Note that if you set the dimensions of the terrain to be small and give a large number of octaves you will get a floating point error
 
-The largest I have made the terrain is 10000 * 10000 vertices which does work however it takes about half a minuete for it to load everything in
+The largest I have made the terrain is 10000 * 10000 vertices which does work however it takes about half a minute for it to load everything in however it could be longer or shorter depending on how powerful your computer is.
 
-Also note that when vertices are very cramped together in the terrain the collision detection does not work very well unless you lower the speed
+Also note that when the bias is low (terrain is more spiky) collision detection does not work very well unless you lower the speed. You could instead increase collisionOffset in the primitive sub object in the json file. collisionOffset is the maximum offset from the terrains actual height (both above and below) that the camera needs to be at for the cameras position in world space to be clamped so it does not go through the terrain. For spikier terrains increasing this should improver collision detection.
 
-## Building the program
+## Building the program on linux
 
 ```
 $ cmake .
@@ -19,26 +19,19 @@ $ make
 ```
 Wherever you build it to make sure you run ./main in the directory the source file (main.cpp) is
 
-However note that if you are using Ubuntu you will likely have to remove some of the libraries included or change the name of some of them such as glfw3 to glfw.
-
-There may also be some errors depending on your compiler. There were a few errors I encountered when building this program on a different device where I had to change some of the source code in randome_terrain.cpp to be more complient with the compiler
-
-You may have to change the include path in random_terrain.h from json/json.h to jsoncpp/json/json.h
+In the CMakeLists.txt file it queries for the file /etc/arch-release. If it exists then it will assume the distro is arch based and set the glfw library to glfw3 and define the macro ARCH so that the header file included in json_parser.h is json/json.h. On most other distros that are not arch based I believe the glfw library is glfw and the header file included in json_parser.h is jsoncpp/json/json.h some other libraries are also not linked because when testing on an Ubuntu based system I did not need them.
 
 If you are using something other than the GNU g++ compiler you will have to change the ASSERT macro to whatever the assert function is with your compiler 
-
 
 Of course make sure you have all the necessary libraries/headers.
 This includes:
 
-
     . jsoncpp
     . glfw3 (or glfw)
     . glew
-    . assimp (possibly in the future for model loading)
+    . assimp 
 
-And likely some other libraries I am forgetting
-
+And likely some other libraries but you are likely to already have them. All of the libraries used are listed in CMakeLists.txt
 
 ## Configuration
 
@@ -62,17 +55,19 @@ All the other options do not have to be set for the program to work as they will
 the trees options should be true or false (default is false) and if set to true it will also draw trees on the terrain randomly. This can also
 be configured in the grid option.
 
-
 You must make sure that your configuration matches for example if you set texture to true and provide a texure make sure the shader you give also accepts a texture.
 
 When making the vertex buffer for the terrain it sets the texture coordinates or colors (depending on configuration) as the second vertex attribute so the shaders you use must accept
 them as index 1. I plan to also have these as options in the config. There is an option in the shaderConfig called textureUniformName which you should set the uniform name to match the one in the shader
 
+The primitive option takes in a string. the string should be exactly like the openGL macros for primitives eg. for triangles "GL_TRIANGLES" also know that this primitive determines the default draw primitive (although you can set it as a parameter in Draw() and more importantly it determines what is in the index buffer so if you specify "GL_POINTS" there will be nothing in the index buffer since it is not necesesary if you are only drawing points, if you want to draw both points and triangles set this option to GL_TRIANGLES and pass GL_POINTS to .Draw() when you want to draw points.
 
 Note that the main.cpp file is responsible for setting most of the uniforms with the exception of the texture of the terrain (if there is one),
 textures and model matrices of the trees if trees is set to true.
 
+## Normals
 
+right now there is a genNormals option however it currently does not work properly. Since each vertice is part of multiple triangles where each triangle has it's own normal I am having trouble generating the normal buffer because only one of each vertice is stored in the vertex buffer. The only resolution I can currently think of is having six of each vertice in the vertexBuffer when genNormals is enabled but that is not a very efficient solution at all.
 
 ## TODO:
     . Lighting configuration options
