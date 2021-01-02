@@ -94,21 +94,22 @@ void Camera::processKeyboard(movement direction, float deltatime)
 		Position += Right*vel;
 	}	
 
-
-	float terrainheight = terrain->getTerrainHeight(Position.x,Position.z);
-	if(terrainheight != 0)
+	if(terrain != nullptr)
 	{
-		if(Position.y < terrainheight + collisionOffset && Position.y > terrainheight - collisionOffset && Position.y > terrainheight)
+		float terrainheight = terrain->getTerrainHeight(Position.x,Position.z);
+		if(terrainheight != 0)
 		{
-			Position.y = terrainheight + collisionOffset;
-		}
-		else if(Position.y < terrainheight + collisionOffset && Position.y > terrainheight - collisionOffset && Position.y < terrainheight)
-		{
-			Position.y = terrainheight - collisionOffset;
+			if(Position.y < terrainheight + collisionOffset && Position.y > terrainheight - collisionOffset && Position.y > terrainheight)
+			{
+				Position.y = terrainheight + collisionOffset;
+			}
+			else if(Position.y < terrainheight + collisionOffset && Position.y > terrainheight - collisionOffset && Position.y < terrainheight)
+			{
+				Position.y = terrainheight - collisionOffset;
 
+			}
 		}
 	}
-
 }
 
 
