@@ -19,9 +19,7 @@ $ make
 ```
 Wherever you build it to make sure you run ./main in the directory the source file (main.cpp) is
 
-In the CMakeLists.txt file it queries for the file /etc/arch-release. If it exists then it will assume the distro is arch based and set the glfw library to glfw3 and define the macro ARCH so that the header file included in json_parser.h is json/json.h. On most other distros that are not arch based I believe the glfw library is glfw and the header file included in json_parser.h is jsoncpp/json/json.h some other libraries are also not linked because when testing on an Ubuntu based system I did not need them.
-
-If you are using something other than the GNU g++ compiler you will have to change the ASSERT macro to whatever the assert function is with your compiler 
+The CMakeLists.txt file queries for the file /etc/arch-release to determine if the distrobution of the os is based on Arch and change some of the headers/libraries accordingly because some vary with distro
 
 Of course make sure you have all the necessary libraries/headers.
 This includes:
