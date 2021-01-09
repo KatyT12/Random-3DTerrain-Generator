@@ -63,6 +63,8 @@ The primitive option takes in a string. the string should be exactly like the op
 Note that the main.cpp file is responsible for setting most of the uniforms with the exception of the texture of the terrain (if there is one),
 textures and model matrices of the trees if trees is set to true.
 
+You can also set the model matrix in the json file, (there is also a setter for it in the terrain class so you can set it in the program aswell). Note that the json file expects a row based matrix
+and converts it to a column based matrix for OpenGL so make sure if you provide a matrix it is row based (unless you are setting it with the setModelMatrix function because it just takes it directly) 
 ## Normals
 
 right now there is a genNormals option however it currently does not work properly. Since each vertice is part of multiple triangles where each triangle has it's own normal I am having trouble generating the normal buffer because only one of each vertice is stored in the vertex buffer. The only resolution I can currently think of is having six of each vertice in the vertexBuffer when genNormals is enabled but that is not a very efficient solution at all.
