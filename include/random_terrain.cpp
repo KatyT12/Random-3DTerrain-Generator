@@ -147,6 +147,23 @@ void Terrain::read_config_file(std::string& name)
         config_struct.geometryShader = shaderConfig["geometryShader"].asBool();
     }
 
+    if(!temp["matrices"].isNull())
+    {
+        auto matricesConfig = temp["matrices"];
+        if(!matricesConfig["model"].isNull()) {
+            float model[16];
+
+            auto modelJson = matricesConfig["model"];
+            int index =0;
+            for (const auto& el : modelJson)
+            {   
+                model[index] = el.asFloat();
+                index++;
+            }
+
+            config_struct.modelMatrix = transpose(glm::make_mat4(model));            
+        }
+    }
 
 }
 
@@ -400,11 +417,12 @@ void Terrain::Draw(GLenum primitive)
     if(primitive == -1) primitive = config_struct.primitive;
 
 
-
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
 
     terrainShader.Bind();
+
+    terrainShader.setUniformMat4f("model",config_struct.modelMatrix);
 
     if(config_struct.texture)
     {
@@ -431,7 +449,7 @@ void Terrain::Draw(GLenum primitive)
         {
             for(int i = 0; i < treeModelMatrices.size(); i++)
             {
-                treeShader.setUniformMat4f("model",treeModelMatrices[i]);
+                treeShader.setUniformMat4f("model",config_struct.modelMatrix * treeModelMatrices[i]);
                 tree.Draw(treeShader,false);
 
             }
@@ -519,7 +537,6 @@ void Terrain::genTerrainTrees()
                 if (config_struct.maxNumInGrid == 1) amount = 1; //To avoid floating point errors
                 else amount = randint(1,config_struct.maxNumInGrid);
 
-                std::cout << amount << "\n";
                 for(int i = 0; i < amount; i++)
                 {
                     treePositions.push_back({x,y});

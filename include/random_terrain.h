@@ -7,7 +7,7 @@
 #include "Random.h"
 #include "shader.h"
 #include "model.h"
-
+#include <glm/gtc/type_ptr.hpp>
 
 
 struct Config
@@ -62,6 +62,9 @@ struct Config
     std::string textureUniformName = "u_Texture"; 
     bool geometryShader = false;
 
+
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+
 };  
 
 class Terrain
@@ -87,6 +90,10 @@ class Terrain
         {
             return config_struct.collisionOffset;
         }
+
+        inline glm::mat4 getTerrainModelMatrix(){return config_struct.modelMatrix;};
+        inline void setTerrainModelMatrix(glm::mat4 newModel){config_struct.modelMatrix = newModel;}
+
 
         float length;
         float width;

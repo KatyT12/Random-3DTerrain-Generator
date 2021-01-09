@@ -96,7 +96,9 @@ void Camera::processKeyboard(movement direction, float deltatime)
 
 	if(terrain != nullptr)
 	{
-		float terrainheight = terrain->getTerrainHeight(Position.x,Position.z);
+		float terrainWorldHeight = (terrain->getTerrainModelMatrix()*glm::vec4(0,0,0,1)).y;
+		float terrainLocalHeight = terrain->getTerrainHeight(Position.x,Position.z);
+		float terrainheight = terrainWorldHeight + terrainLocalHeight;
 		if(terrainheight != 0)
 		{
 			if(Position.y < terrainheight + collisionOffset && Position.y > terrainheight - collisionOffset && Position.y > terrainheight)

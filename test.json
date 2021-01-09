@@ -2,14 +2,14 @@
    "perlinnoise" : 
    {
       "bias" : 1.4,
-      "octaves" : 9,
+      "octaves" : 7,
       "seed" : 121232
    },
    "dimensions":
    {
       "x":1000,
       "y":1000,
-      "max_height":30,
+      "max_height":100,
       "posX": 0,
       "posY": 0,
       "offset":0.4,
@@ -28,19 +28,19 @@
          "treeShader": "res/shaders/simple_model.shader",
          "instancing": false,
 
-         "gridX": 200,
-         "gridY": 200
+         "gridX": 50,
+         "gridY": 50
       }
    },
    "colors":
    {
       "staticColor": false,
       
-      "texture": false, 
-      "textureLocation": "res/textures/terrainGrass.jpg",
+      "texture": true, 
+      "textureLocation": "res/textures/terrainStone.jpg",
       "textureSlot": 2,
       
-      "textureRepeat": true,
+      "textureRepeat": false,
       "textureRepeatConfig":
       {
          "xTextureRepeatOffset": 50.0,
@@ -53,8 +53,16 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/color2.shader",
+      "shaderLocation": "res/shaders/basic.shader",
       "textureUniformName": "u_Texture",
       "geometryShader": false
+   },
+
+   "matrices":
+   {
+      "model": [1,0,0,0,
+               0,1,0,-70,
+               0,0,1,0,
+               0,0,0,1]
    }
 }
