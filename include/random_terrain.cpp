@@ -601,6 +601,10 @@ void Terrain::genTerrainTrees()
 
 void Terrain::newColors(std::vector<glm::vec3>& colors)
 {
+    if(config_struct.texture)
+    {
+        return;
+    }
     float* newColorMap = new float[config_struct.x * config_struct.y];
     float* newSeedMap = new float[config_struct.x * config_struct.y]; 
     for(int i = 0; i < config_struct.x * config_struct.y;i++)
