@@ -90,6 +90,8 @@ void Terrain::read_config_file(std::string& name)
         config_struct.gridY = grid["gridY"].asInt(); 
 
         if(!grid["chancePerGrid"].isNull()) config_struct.treeChance = grid["chancePerGrid"].asFloat();
+        if(!grid["maxNumInGrid"].isNull()) config_struct.maxNumInGrid = grid["maxNumInGrid"].asInt();
+
         if(!grid["treeModel"].isNull()) config_struct.treeModel = grid["treeModel"].asString();
         if(!grid["treeShader"].isNull()) config_struct.treeShader = grid["treeShader"].asString();
         config_struct.instancing = grid["instancing"].asBool();
@@ -513,17 +515,26 @@ void Terrain::genTerrainTrees()
             int result = randint(0,config_struct.treeChance);
             if(result == 1)
             {
-                treePositions.push_back({x,y});
-                
-                float xOffset = randdouble(0,config_struct.gridX);
-                float zOffset = randdouble(0,config_struct.gridY);
+                int amount;
+                if (config_struct.maxNumInGrid == 1) amount = 1; //To avoid floating point errors
+                else amount = randint(1,config_struct.maxNumInGrid);
+
+                std::cout << amount << "\n";
+                for(int i = 0; i < amount; i++)
+                {
+                    treePositions.push_back({x,y});
+                    
+                    float xOffset = randdouble(0,config_struct.gridX);
+                    float zOffset = randdouble(0,config_struct.gridY);
 
 
-                float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + xOffset) * config_struct.offset;
-                float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
-                float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
+                    float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + xOffset) * config_struct.offset;
+                    float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
+                    float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
 
-                treeModelMatrices.push_back(glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+                    treeModelMatrices.push_back(glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+                }
+
 
             }
 

@@ -28,7 +28,7 @@ inline uint32_t getLehmer()
 
 inline int randint(int min, int max)
 {
-    return (Lehmer32() % (max - min)) + min;
+    return (Lehmer32() % ((max - min+1))) + min;
 }
 
 inline double randdouble(double min, double max)

@@ -14,19 +14,22 @@
       "posY": 0,
       "offset":0.4,
       
+      "collisionOffset": 0.25,
+
       "primitive": "GL_TRIANGLES",
       "genNormals": false,
 
       "trees": true,
       "grid":
       {
-         "chancePerGrid": 15,
+         "chancePerGrid": 8,
+         "maxNumInGrid": 1,
          "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/simple_model.shader",
          "instancing": false,
 
-         "gridX": 50,
-         "gridY": 50
+         "gridX": 200,
+         "gridY": 200
       }
    },
    "colors":

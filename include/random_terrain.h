@@ -37,7 +37,7 @@ struct Config
     bool instancing = false; //If you set this to true make sure to use a shader that works with instancing and vice versa
    
     float treeChance = 20; //It is 1 over this number so 1 in 20 chance
-
+    int maxNumInGrid = 1;
 
 
 
