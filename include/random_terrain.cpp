@@ -449,7 +449,7 @@ void Terrain::Draw(GLenum primitive)
         {
             for(int i = 0; i < treeModelMatrices.size(); i++)
             {
-                treeShader.setUniformMat4f("model",config_struct.modelMatrix * treeModelMatrices[i]);
+                treeShader.setUniformMat4f("model",treeModelMatrices[i]);
                 tree.Draw(treeShader,false);
 
             }
@@ -549,7 +549,7 @@ void Terrain::genTerrainTrees()
                     float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
                     float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
 
-                    treeModelMatrices.push_back(glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+                    treeModelMatrices.push_back(config_struct.modelMatrix * glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
                 }
 
 
