@@ -69,6 +69,12 @@ and converts it to a column based matrix for OpenGL so make sure if you provide 
 
 right now there is a genNormals option however it currently does not work properly. Since each vertice is part of multiple triangles where each triangle has it's own normal I am having trouble generating the normal buffer because only one of each vertice is stored in the vertex buffer. The only resolution I can currently think of is having six of each vertice in the vertexBuffer when genNormals is enabled but that is not a very efficient solution at all.
 
+## Examples
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example1.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example2.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example3.png?raw=true)
+
+
 ## TODO:
     . Lighting configuration options
     . Work better with textures

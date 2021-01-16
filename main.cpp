@@ -16,7 +16,8 @@
 
 
 void processInput(GLFWwindow *window);
-void fillVBO();
+void resetColors(std::vector<glm::vec3>& oldColors);
+
 
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f),glm::vec3(0.0f,1.0f,0.0f),-90.0f,0.0f,10.0f);
@@ -63,6 +64,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(void)
 {
+
     GLFWwindow* window;
 
     if (!glfwInit())
@@ -75,7 +77,7 @@ int main(void)
     //Antialiasing
     glfwWindowHint(GLFW_SAMPLES, 4);
 	
-    window = glfwCreateWindow(960, 540, "Depth testing", NULL, NULL);
+    window = glfwCreateWindow(960, 540, "Random terrain", NULL, NULL);
     
     if (!window)
     {
@@ -116,16 +118,13 @@ int main(void)
 
     {
    
+    std::vector<glm::vec3> colors;
+    resetColors(colors);
+
+
     Terrain terrain = Terrain("test.json");
     terrain.init();
 
-
-
-
-
-   // shader NormalsShader("res/shaders/normals.shader",true);
-
-   // shader terrainShader("res/shaders/basic.shader");
 
  
 	glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);	
@@ -162,17 +161,18 @@ int main(void)
         terrain.terrainShader.setUniformMat4f("model",model);
         terrain.terrainShader.setUniformMat4f("proj",proj);
         terrain.terrainShader.setUniformMat4f("view",view);
+        //terrain.terrainShader.setUniform1i("u_Texture",2);
         
         terrain.treeShader.Bind();
         terrain.treeShader.setUniformMat4f("view",view);
         terrain.treeShader.setUniformMat4f("proj",proj);
         
-        
+
         terrain.Draw();
 
         if(spacePressed)
         {
-            std::vector<glm::vec3> colors = {glm::vec3(1.0f,0.0f,1.0f),glm::vec3(0.0f,1.0f,0.0f),glm::vec3(0.0f,0.0f,1.0f),glm::vec3(1.0f,0.0f,0.0f)};
+            resetColors(colors);
             terrain.newColors(colors);
             spacePressed = false;
         }
@@ -217,8 +217,7 @@ void processInput(GLFWwindow *window)
        
     }
 
-
-
+   
     //Just for debugging
     if(glfwGetKey(window,GLFW_KEY_0)==GLFW_PRESS)
     {
@@ -229,3 +228,10 @@ void processInput(GLFWwindow *window)
 };
 
 
+ void resetColors(std::vector<glm::vec3>& oldColors)
+    {
+        for(int i=0; i < 15; i++)
+        {
+            oldColors.push_back(glm::vec3(randdouble(0,1),randdouble(0,1),randdouble(0,1)));
+        }
+    }
