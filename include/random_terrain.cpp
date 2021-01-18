@@ -33,6 +33,8 @@ Terrain::Terrain(std::string config_file)
     
     if(config_struct.trees) treeShader.makeShader(config_struct.treeShader);
 
+    if(config_struct.primitive == GL_POINTS || config_struct.genNormals) genIB = false; else genIB = true; 
+
 }
 
 
@@ -184,14 +186,11 @@ void Terrain::init()
 
     /*Set the correct amount of vertex floats for allocating the array and for the vertex buffer depending on whether we are using texture coords or not*/
 
-    int nVertexFloats;
-    if(config_struct.texture)nVertexFloats = 5;
-    else nVertexFloats = 6;
+    int nVertexFloats = getStride();
+  
 
     //Attrin index is the attribute of the  texCoords/colors
-    int attribIndex;
-    if(config_struct.genNormals) attribIndex = 2;
-    else attribIndex = 1;
+    int attribIndex =1;
 
 
     perlInNoise2D(config_struct.x,config_struct.y,seeds,config_struct.octaves,config_struct.bias,map);
@@ -207,11 +206,14 @@ void Terrain::init()
     unsigned int* terrainIB;
     
     //There is no need for an index buffer if we are just drawing the points
-    if(config_struct.primitive != GL_POINTS) terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; //Something wrong here
+    if(genIB) 
+    {
+        terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; 
+        if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
+        else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
+    }
     
     
-    if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
-    else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
     
     
 
@@ -221,18 +223,17 @@ void Terrain::init()
 
     GLCall(glGenBuffers(1,&vbo));
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,vbo));
-    GLCall(glBufferData(GL_ARRAY_BUFFER,config_struct.x*config_struct.y*nVertexFloats*sizeof(float),&vbTerrain[0],GL_STATIC_DRAW));
-
+    GLCall(glBufferData(GL_ARRAY_BUFFER,detVbSize()*sizeof(float),&vbTerrain[0],GL_STATIC_DRAW));
 
 
     GLCall(glEnableVertexAttribArray(0));
-    GLCall(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)0));
+    GLCall(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,getStride()*sizeof(float),(void*)0));
 
     GLCall(glEnableVertexAttribArray(attribIndex));
-    GLCall(glVertexAttribPointer(attribIndex,nVertexFloats-3,GL_FLOAT,GL_FALSE,nVertexFloats*sizeof(float),(void*)(3*sizeof(float))));
+    GLCall(glVertexAttribPointer(attribIndex,nVertexFloats-3,GL_FLOAT,GL_FALSE,getStride()*sizeof(float),(void*)(3*sizeof(float))));
     
 
-    if(config_struct.primitive != GL_POINTS)
+    if(genIB)
     {
         GLCall(glGenBuffers(1,&ib));
         GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib));
@@ -245,16 +246,18 @@ void Terrain::init()
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0));
 
-    
-    
-    if(config_struct.genNormals) generateNormals(vbTerrain,terrainIB);
+    if(config_struct.genNormals)
+    {
+        generateNormals(vbTerrain);
+    }
+
 
     delete map;
     delete seeds;
 
 
     delete vbTerrain;
-    if(config_struct.primitive != GL_POINTS) delete terrainIB;
+    if(genIB) delete terrainIB;
 
     if(config_struct.trees)
     {
@@ -279,10 +282,7 @@ int Terrain::getStride()
     else{
         stride += 3;
     }
-    if(config_struct.genNormals)
-    {
-        stride += 3;
-    }
+  
     return stride;
 }
 
@@ -425,13 +425,13 @@ void Terrain::Draw(GLenum primitive)
 
     }
 
-    if(primitive != GL_POINTS)
+    if(genIB)
     {
         glDrawElements(primitive,config_struct.x * config_struct.y * 6,GL_UNSIGNED_INT,nullptr);
     }
     else
     {
-        glDrawArrays(primitive,0,config_struct.x * config_struct.y);
+        glDrawArrays(primitive,0,detVbSize()/getStride());
     }
     
     terrainShader.UnBind();
@@ -445,14 +445,12 @@ void Terrain::Draw(GLenum primitive)
             {
                 treeShader.setUniformMat4f("model",treeModelMatrices[i]);
                 tree.Draw(treeShader,false);
-
             }
         }
         else
         {
             tree.DrawInstanced(treeShader,treeModelMatrices.size(),false);
         }
-
 
         treeShader.UnBind();
 
@@ -485,7 +483,6 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
         {
             for(int y =0; y < config_struct.y-1;y++)
             {
-
                 fillVertex(vbTerrain,map,xPlace,stride,x,y);
                 xPlace += stride;
                 fillVertex(vbTerrain,map,xPlace,stride,x+1,y);
@@ -500,6 +497,8 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
                 xPlace += stride;
             }
         }
+    
+    
     }
    
 
@@ -683,50 +682,55 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
 
 /* This still does not work properly and i need to fix it*/
 
-void Terrain::generateNormals(float* vertexBuffer, unsigned int* indexes)
+void Terrain::generateNormals(float*& vertexBuffer)
 {
-    glm::vec3* normalArray = new glm::vec3[(config_struct.x-1) * (config_struct.y-1)];
+    glm::vec3* normalArray = new glm::vec3[(detVbSize()/getStride())];
 
-    int stride;
-    if (config_struct.texture) stride = 5*sizeof(float);
-    else stride = 6 * sizeof(float);
+    int stride = getStride();
 
 
     int place = 0;
-    for(int x =0; x < ((config_struct.x - 1) * (config_struct.y-1))/3; x++)
+    int normalPlace = 0;
+    for(int x =0; x < (detVbSize()/getStride())/3; x++)
     {
         
-        glm::vec3 posA = {vertexBuffer[indexes[place] * stride],vertexBuffer[indexes[place] * stride + 1],vertexBuffer[indexes[place] * stride + 2]};
-        glm::vec3 posB = {vertexBuffer[indexes[place+1] * stride],vertexBuffer[indexes[place+1] * stride + 1],vertexBuffer[indexes[place+1] * stride + 2]};
-        glm::vec3 posC = {vertexBuffer[indexes[place+2] * stride],vertexBuffer[indexes[place+2] * stride + 1],vertexBuffer[indexes[place+2] * stride + 2]};
+        glm::vec3 posA = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+        place += stride;
+        glm::vec3 posB = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+        place += stride;
+        glm::vec3 posC = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
 
         glm::vec3 vecA = posB - posA;
         glm::vec3 vecB = posC - posA;
 
         glm::vec3 normal = glm::normalize(glm::cross(vecA,vecB));
+        if(normal.y < 0)
+        {
+            normal = normal * glm::vec3(-1.0f,-1.0f,-1.0f);
+        }
 
-        if (normal.y < 0) normal.y *= -1;
-        
-        std::cout << indexes[place+2] << "\n";
-        normalArray[indexes[place]] = normal;
-        normalArray[indexes[place+1]] = normal;
-        normalArray[indexes[place+2]] = normal;
-        place += 3;
+        normalArray[normalPlace] = normal;
+        normalArray[normalPlace+1] = normal;
+        normalArray[normalPlace+2] = normal;
 
+        place += stride;
+        normalPlace += 3;
     }
 
     GLCall(glGenBuffers(1,&normals));
     
     GLCall(glBindVertexArray(vao));
+
     
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,normals));
-    GLCall(glBufferData(GL_ARRAY_BUFFER,(config_struct.x-1) * (config_struct.y-1)*3*sizeof(float),&normalArray[0],GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ARRAY_BUFFER,(detVbSize()/getStride())*3*sizeof(float),&normalArray[0][0],GL_STATIC_DRAW));
 
-    GLCall(glEnableVertexAttribArray(1));
-    GLCall(glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0));
+    GLCall(glEnableVertexAttribArray(2));
+    GLCall(glVertexAttribPointer(2,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0));
 
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
     glBindVertexArray(0);
+
 
     delete normalArray;
 }

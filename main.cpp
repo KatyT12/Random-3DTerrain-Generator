@@ -161,11 +161,21 @@ int main(void)
         terrain.terrainShader.setUniformMat4f("model",model);
         terrain.terrainShader.setUniformMat4f("proj",proj);
         terrain.terrainShader.setUniformMat4f("view",view);
-        //terrain.terrainShader.setUniform1i("u_Texture",2);
+        //Lighting
+       
+
+
+
+
+        if(terrain.treesPresent())
+        {
+            terrain.treeShader.Bind();
+            terrain.treeShader.setUniformMat4f("view",view);
+            terrain.treeShader.setUniformMat4f("proj",proj);
+        }
         
-        terrain.treeShader.Bind();
-        terrain.treeShader.setUniformMat4f("view",view);
-        terrain.treeShader.setUniformMat4f("proj",proj);
+        
+        
         
 
         terrain.Draw();

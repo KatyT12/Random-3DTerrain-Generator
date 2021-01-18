@@ -93,7 +93,7 @@ class Terrain
 
         inline glm::mat4 getTerrainModelMatrix(){return config_struct.modelMatrix;};
         inline void setTerrainModelMatrix(glm::mat4 newModel){config_struct.modelMatrix = newModel;}
-
+        inline bool treesPresent()const {return config_struct.trees;}
 
         float length;
         float width;
@@ -105,6 +105,7 @@ class Terrain
         void read_config_file(std::string& name);
         float interpolateFloat(float color1, float color2, float fraction);
 
+        bool genIB = true;
         unsigned int vao;
         unsigned int vbo;
         unsigned int ib;
@@ -126,7 +127,7 @@ class Terrain
         void indexBufferTriangles(unsigned int*& buffer);
         void indexBufferLines(unsigned int*& buffer);
 
-        void generateNormals(float* vertexBuffer, unsigned int* indexes);
+        void generateNormals(float*& vertexBuffer);
 
         void genTerrainTrees();
         

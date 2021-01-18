@@ -1,8 +1,8 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.4,
-      "octaves" : 7,
+      "bias" : 1.6,
+      "octaves" : 9,
       "seed" : 121232
    },
    "dimensions":
@@ -17,30 +17,30 @@
       "collisionOffset": 0.25,
 
       "primitive": "GL_TRIANGLES",
-      "genNormals": false,
+      "genNormals": true,
 
       "trees": true,
       "grid":
       {
-         "chancePerGrid": 8,
+         "chancePerGrid": 3,
          "maxNumInGrid": 1,
-         "treeModel": "res/models/tree.obj",
-         "treeShader": "res/shaders/simple_model.shader",
-         "instancing": false,
+         "treeModel": "/home/katy/Library/External-models/Island/tree.obj",
+         "treeShader": "res/shaders/tree.shader",
+         "instancing": true,
 
-         "gridX": 50,
-         "gridY": 50
+         "gridX": 30,
+         "gridY": 30
       }
    },
    "colors":
    {
       "staticColor": false,
       
-      "texture": true, 
-      "textureLocation": "res/textures/terrainStone.jpg",
+      "texture": false, 
+      "textureLocation": "res/textures/terrainGrass.jpg",
       "textureSlot": 2,
       
-      "textureRepeat": false,
+      "textureRepeat": true,
       "textureRepeatConfig":
       {
          "xTextureRepeatOffset": 50.0,
@@ -53,7 +53,7 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/basic.shader",
+      "shaderLocation": "res/shaders/temp.shader",
       "textureUniformName": "u_Texture",
       "geometryShader": false
    },
