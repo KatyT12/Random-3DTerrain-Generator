@@ -362,10 +362,13 @@ float Terrain::barryCentric(std::vector<float> p1, std::vector<float> p2, std::v
 void Terrain::determineColAttrib(float*& buffer,int place)
 {
         float point_height = (buffer[place + 1]-config_struct.height/(15/7))/4.0f;
+        glm::vec3 col {interpolateFloat(config_struct.color1[0],config_struct.color2[0],point_height),interpolateFloat(config_struct.color1[1],config_struct.color2[1],point_height),interpolateFloat(config_struct.color1[2],config_struct.color2[2],point_height)};
+        clampColor(col);
 
-       buffer[place+3] = interpolateFloat(config_struct.color1[0],config_struct.color2[0],point_height);
-            buffer[place+4] = interpolateFloat(config_struct.color1[1],config_struct.color2[1],point_height);
-            buffer[place+5] = interpolateFloat(config_struct.color1[2],config_struct.color2[2],point_height);
+
+            buffer[place+3] = col.r;
+            buffer[place+4] = col.g;
+            buffer[place+5] = col.b;
 
             if(config_struct.staticColor)
             {
@@ -378,6 +381,15 @@ void Terrain::determineColAttrib(float*& buffer,int place)
                 }
             }
 
+}
+
+void Terrain::clampColor(glm::vec3& col)
+{
+    for(int i=0;i<3;i++)
+    {
+        if(col[i] < 0.0f) col[i] = 0.0f;
+        if(col[i] > 1.0f) col[i] = 1.0f;
+    }
 }
 
 void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)

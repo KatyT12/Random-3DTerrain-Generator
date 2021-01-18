@@ -162,7 +162,11 @@ int main(void)
         terrain.terrainShader.setUniformMat4f("proj",proj);
         terrain.terrainShader.setUniformMat4f("view",view);
         //Lighting
-       
+        terrain.terrainShader.setUniformVec3f("u_viewPos",camera.Position);
+        terrain.terrainShader.setUniformVec3f("light.direction",glm::vec3(0.6f,-0.6f,-0.3f));
+        terrain.terrainShader.setUniformVec3f("light.ambient",glm::vec3(0.2f,0.2f,0.2f));
+        terrain.terrainShader.setUniformVec3f("light.diffuse",glm::vec3(0.5f,0.5f,0.5f));
+        terrain.terrainShader.setUniformVec3f("light.specular",glm::vec3(0.4f,0.4f,0.4f));
 
 
 

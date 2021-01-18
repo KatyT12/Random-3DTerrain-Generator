@@ -121,6 +121,7 @@ class Terrain
         
 
         void determineColAttrib(float *& buffer,int place);
+        void clampColor(glm::vec3& col);
         void determineTexAttrib(float *& buffer,int x, int y, int place);
 
         void genVertexBuffer(float*& vbTerrain,float*& map);
