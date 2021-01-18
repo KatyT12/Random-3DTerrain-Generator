@@ -170,8 +170,6 @@ void Terrain::read_config_file(std::string& name)
 //In desperate need of some abstraction idk
 void Terrain::init()
 {
-   
-
     setLehmer((uint32_t) config_struct.seed);
     
    
@@ -182,7 +180,6 @@ void Terrain::init()
     {
         //seeds[i] = (float)rand() / (float)RAND_MAX; b
         seeds[i] = randdouble(0.0,1.0);
-        
     }
 
     /*Set the correct amount of vertex floats for allocating the array and for the vertex buffer depending on whether we are using texture coords or not*/
@@ -201,9 +198,9 @@ void Terrain::init()
 
     int offset = 0.4;
     
-    int stride = nVertexFloats;
+    int stride = getStride();
 
-    float *vbTerrain = new float[config_struct.x*config_struct.y * nVertexFloats];
+    float *vbTerrain = new float[detVbSize()];
     genVertexBuffer(vbTerrain,map);
 
 
@@ -271,6 +268,35 @@ void Terrain::init()
 
 }
 
+int Terrain::getStride()
+{
+    int stride = 3;
+
+    if(config_struct.texture)
+    {
+        stride += 2;
+    }
+    else{
+        stride += 3;
+    }
+    if(config_struct.genNormals)
+    {
+        stride += 3;
+    }
+    return stride;
+}
+
+int Terrain::detVbSize(){
+    int stride = getStride();
+    int size = 0;
+
+    if(config_struct.genNormals)
+    {
+        size = (config_struct.x-1)*(config_struct.y-1)*6 * stride;
+        return size;
+    }
+    return config_struct.x * config_struct.y * stride;
+}
 
 float Terrain::interpolateFloat(float color1, float color2, float fraction)
 {
@@ -434,41 +460,77 @@ void Terrain::Draw(GLenum primitive)
 //For primitive GL_TRIANGLES
 void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
 {
+    
     int xPlace = 0;
     int yPlace = 0;
     
-    int nVertexFloats;
-    if(config_struct.texture)nVertexFloats = 5;
-    else nVertexFloats = 6;
-    int stride = nVertexFloats;
+    int stride = getStride();
 
-    for(int x=0; x < config_struct.x; x++)
-    {
-        for(int y =0; y < config_struct.y;y++)
+    if(!config_struct.genNormals){
+        for(int x=0; x < config_struct.x; x++)
         {
-
-            vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
-            vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
-            vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
-
-
-            if(!config_struct.texture)
+            for(int y =0; y < config_struct.y;y++)
             {
-                determineColAttrib(vbTerrain,xPlace);
+
+                fillVertex(vbTerrain,map,xPlace,stride,x,y);
+
+                xPlace += stride;
 
             }
-            else
-            {
-                determineTexAttrib(vbTerrain,x,y,xPlace);
-            }
-            
-            height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
-
-            xPlace += stride;
-
         }
     }
 
+    else{
+     for(int x=0; x < config_struct.x; x++)
+        {
+            for(int y =0; y < config_struct.y;y++)
+            {
+
+                vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
+                vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
+                vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
+
+
+                if(!config_struct.texture)
+                {
+                    determineColAttrib(vbTerrain,xPlace);
+
+                }
+                else
+                {
+                    determineTexAttrib(vbTerrain,x,y,xPlace);
+                }
+                
+                height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
+
+                xPlace += stride;
+
+
+
+            }
+        }
+    }
+   
+
+}
+
+void Terrain::fillVertex(float*& vbTerrain, float*& map,int& xPlace,const int& stride, int& x, int& y){
+                vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
+                vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
+                vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
+
+
+                if(!config_struct.texture)
+                {
+                    determineColAttrib(vbTerrain,xPlace);
+
+                }
+                else
+                {
+                    determineTexAttrib(vbTerrain,x,y,xPlace);
+                }
+                
+                height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
 }
 
 

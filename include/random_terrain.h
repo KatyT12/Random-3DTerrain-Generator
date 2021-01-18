@@ -112,6 +112,9 @@ class Terrain
         unsigned int normals; //If genNormals is set to true
 
 
+        int detVbSize();
+        int getStride();
+        void fillVertex(float*& vbTerrain,float*& map, int& xPlace,const int& stride, int& x, int& y);
 
         float barryCentric(std::vector<float> p1, std::vector<float> p2, std::vector<float> p3, std::vector<float> pos) const;
         
