@@ -203,45 +203,9 @@ void Terrain::init()
     
     int stride = nVertexFloats;
 
-    //float vbTerrain[256*256 * 6];
-    
-    int xPlace = 0;
-    int yPlace = 0;
-
     float *vbTerrain = new float[config_struct.x*config_struct.y * nVertexFloats];
+    genVertexBuffer(vbTerrain,map);
 
-
-
-
-    //Colors to blend between. Should be set in config but this is just for testing
-    
-    for(int x=0; x < config_struct.x; x++)
-    {
-        for(int y =0; y < config_struct.y;y++)
-        {
-
-            vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
-            vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
-            vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
-
-
-            if(!config_struct.texture)
-            {
-                determineColAttrib(vbTerrain,xPlace);
-
-            }
-            else
-            {
-                determineTexAttrib(vbTerrain,x,y,xPlace);
-            }
-            
-            height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
-
-            xPlace += stride;
-
-
-        }
-    }
 
     unsigned int* terrainIB;
     
@@ -468,6 +432,46 @@ void Terrain::Draw(GLenum primitive)
 }
 
 //For primitive GL_TRIANGLES
+void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
+{
+    int xPlace = 0;
+    int yPlace = 0;
+    
+    int nVertexFloats;
+    if(config_struct.texture)nVertexFloats = 5;
+    else nVertexFloats = 6;
+    int stride = nVertexFloats;
+
+    for(int x=0; x < config_struct.x; x++)
+    {
+        for(int y =0; y < config_struct.y;y++)
+        {
+
+            vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
+            vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
+            vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
+
+
+            if(!config_struct.texture)
+            {
+                determineColAttrib(vbTerrain,xPlace);
+
+            }
+            else
+            {
+                determineTexAttrib(vbTerrain,x,y,xPlace);
+            }
+            
+            height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
+
+            xPlace += stride;
+
+        }
+    }
+
+}
+
+
 void Terrain::indexBufferTriangles(unsigned int*& buffer)
 {
     int place = 0;
@@ -515,7 +519,6 @@ void Terrain::indexBufferLines(unsigned int*& buffer)
             place += 6;
 
         }
-
     }
 }
 
@@ -593,9 +596,6 @@ void Terrain::genTerrainTrees()
         glBindBuffer(GL_ARRAY_BUFFER,0);
 
     }
-    
-
-
 }
 
 
@@ -611,7 +611,7 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
     {
         newSeedMap[i] = randdouble(0,1);
     }
-    perlInNoise2D(config_struct.x,config_struct.y,newSeedMap,config_struct.octaves,1.4,newColorMap);
+    perlInNoise2D(config_struct.x,config_struct.y,newSeedMap,6,1.6,newColorMap);
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 

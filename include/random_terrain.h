@@ -119,6 +119,7 @@ class Terrain
         void determineColAttrib(float *& buffer,int place);
         void determineTexAttrib(float *& buffer,int x, int y, int place);
 
+        void genVertexBuffer(float*& vbTerrain,float*& map);
         void indexBufferTriangles(unsigned int*& buffer);
         void indexBufferLines(unsigned int*& buffer);
 
