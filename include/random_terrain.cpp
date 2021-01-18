@@ -392,8 +392,12 @@ void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)
     }
     else
     {
-        float xLocationInSquare = ((float)x/config_struct.xTextureRepeatOffset - (int)(x/config_struct.xTextureRepeatOffset));
-        float yLocationInSquare = ((float)y/config_struct.yTextureRepeatOffset - (int)(y/config_struct.yTextureRepeatOffset));
+        float lengX = (float)config_struct.x/config_struct.xTextureRepeatOffset;
+        float lengY = (float)config_struct.y/config_struct.yTextureRepeatOffset;
+
+
+        float xLocationInSquare = ((float)x/(float)config_struct.x*lengX);
+        float yLocationInSquare = ((float)y/(float)config_struct.y*lengY);
 
 
         buffer[place+3] = xLocationInSquare;
@@ -471,42 +475,29 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
         {
             for(int y =0; y < config_struct.y;y++)
             {
-
                 fillVertex(vbTerrain,map,xPlace,stride,x,y);
-
                 xPlace += stride;
-
             }
         }
     }
-
     else{
-     for(int x=0; x < config_struct.x; x++)
+     for(int x=0; x < config_struct.x-1; x++)
         {
-            for(int y =0; y < config_struct.y;y++)
+            for(int y =0; y < config_struct.y-1;y++)
             {
 
-                vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
-                vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
-                vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
-
-
-                if(!config_struct.texture)
-                {
-                    determineColAttrib(vbTerrain,xPlace);
-
-                }
-                else
-                {
-                    determineTexAttrib(vbTerrain,x,y,xPlace);
-                }
-                
-                height_map[x*config_struct.y + y] = vbTerrain[xPlace +1];
-
+                fillVertex(vbTerrain,map,xPlace,stride,x,y);
                 xPlace += stride;
-
-
-
+                fillVertex(vbTerrain,map,xPlace,stride,x+1,y);
+                xPlace += stride;
+                fillVertex(vbTerrain,map,xPlace,stride,x,y+1);
+                xPlace += stride;
+                fillVertex(vbTerrain,map,xPlace,stride,x,y+1);
+                xPlace += stride;
+                fillVertex(vbTerrain,map,xPlace,stride,x+1,y+1);
+                xPlace += stride;
+                fillVertex(vbTerrain,map,xPlace,stride,x+1,y);
+                xPlace += stride;
             }
         }
     }
@@ -514,7 +505,7 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
 
 }
 
-void Terrain::fillVertex(float*& vbTerrain, float*& map,int& xPlace,const int& stride, int& x, int& y){
+void Terrain::fillVertex(float*& vbTerrain, float*& map,int& xPlace,const int& stride, int x, int y){
                 vbTerrain[xPlace] = (float)x*config_struct.offset + config_struct.posX;
                 vbTerrain[xPlace +1] = map[x * config_struct.y + y] * config_struct.height;  
                 vbTerrain[xPlace + 2] = (float)(y*config_struct.offset*-1 + config_struct.posY);
