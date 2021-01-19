@@ -65,9 +65,8 @@ textures and model matrices of the trees if trees is set to true.
 
 You can also set the model matrix in the json file, (there is also a setter for it in the terrain class so you can set it in the program aswell). Note that the json file expects a row based matrix
 and converts it to a column based matrix for OpenGL so make sure if you provide a matrix it is row based (unless you are setting it with the setModelMatrix function because it just takes it directly) 
-## Normals
 
-right now there is a genNormals option however it currently does not work properly. Since each vertice is part of multiple triangles where each triangle has it's own normal I am having trouble generating the normal buffer because only one of each vertice is stored in the vertex buffer. The only resolution I can currently think of is having six of each vertice in the vertexBuffer when genNormals is enabled but that is not a very efficient solution at all.
+genNormals is an option that will generate normals. Right now it is not very elegant since I just added it. The normals are perface so the vertex buffer is made six times as large and an index buffer is not generated. I plan on giving the option on whether you want the normals per face or not and more config for lighting. the normals are set to vertex attribute 2 which I will change becaus usually I set normals to be vertex attrib 1.  
 
 ## Examples
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example1.png?raw=true)
