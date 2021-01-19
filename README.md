@@ -72,7 +72,7 @@ right now there is a genNormals option however it currently does not work proper
 ## Examples
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example1.png?raw=true)
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example2.png?raw=true)
-![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example3.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example6.png?raw=true)
 
 
 ## TODO:
