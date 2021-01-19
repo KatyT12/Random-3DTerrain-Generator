@@ -24,7 +24,7 @@
       {
          "chancePerGrid": 3,
          "maxNumInGrid": 1,
-         "treeModel": "/home/katy/Library/External-models/Island/tree.obj",
+         "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/tree.shader",
          "instancing": true,
 
@@ -53,7 +53,7 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/temp.shader",
+      "shaderLocation": "res/shaders/terrainLightingDirectional.shader",
       "textureUniformName": "u_Texture",
       "geometryShader": false
    },
