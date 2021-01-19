@@ -1,7 +1,7 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.6,
+      "bias" : 1.4,
       "octaves" : 9,
       "seed" : 121232
    },
@@ -14,7 +14,7 @@
       "posY": 0,
       "offset":0.4,
       
-      "collisionOffset": 0.25,
+      "collisionOffset": 0.45,
 
       "primitive": "GL_TRIANGLES",
       "genNormals": true,
@@ -22,7 +22,7 @@
       "trees": true,
       "grid":
       {
-         "chancePerGrid": 3,
+         "chancePerGrid": 8,
          "maxNumInGrid": 1,
          "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/tree.shader",
