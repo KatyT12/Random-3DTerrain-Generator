@@ -69,7 +69,7 @@ and converts it to a column based matrix for OpenGL so make sure if you provide 
 genNormals is an option that will generate normals. Right now it is not very elegant since I just added it. The normals are perface so the vertex buffer is made six times as large and an index buffer is not generated. I plan on giving the option on whether you want the normals per face or not and more config for lighting. the normals are set to vertex attribute 2 which I will change becaus usually I set normals to be vertex attrib 1.  
 
 ## Examples
-![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example1.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example8.png?raw=true)
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example2.png?raw=true)
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example6.png?raw=true)
 

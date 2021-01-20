@@ -140,10 +140,11 @@ int main(void)
 
 
 
-    Water water(3,100);
+    Water water(10,100);
     water.genBuffer();
     water.setShader("res/shaders/2d.shader");
 
+    glm::mat4 waterModel = glm::scale(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-15.0f,0.0f)),glm::vec3(200.0f,-0.0f,-200.0f));
 
     while(!glfwWindowShouldClose(window)){
 
@@ -162,6 +163,20 @@ int main(void)
 		glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
 		
         
+        water.waterShader.Bind();        
+        water.waterShader.setUniformMat4f("model",waterModel);
+        water.waterShader.setUniformMat4f("view",view);
+        water.waterShader.setUniformMat4f("proj",proj);
+        water.Draw();
+        water.waterShader.UnBind();
+
+
+
+
+
+
+
+
         terrain.terrainShader.Bind();
         terrain.terrainShader.setUniformMat4f("model",model);
         terrain.terrainShader.setUniformMat4f("proj",proj);
@@ -186,12 +201,7 @@ int main(void)
         
      
 
-        water.waterShader.Bind();        
-        water.waterShader.setUniformMat4f("model",glm::scale(glm::mat4(1.0f),glm::vec3(400.0f,0.0f,-400.0f)));
-        water.waterShader.setUniformMat4f("view",view);
-        water.waterShader.setUniformMat4f("proj",proj);
-        water.Draw();
-        water.waterShader.UnBind();
+
 
 
 
@@ -223,8 +233,9 @@ void processInput(GLFWwindow *window)
 {
     
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
-
+    }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.processKeyboard(FORWARD, deltaTime);
 
