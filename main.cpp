@@ -144,7 +144,7 @@ int main(void)
     water.genBuffer();
     water.setShader("res/shaders/2d.shader");
 
-    glm::mat4 waterModel = glm::scale(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-15.0f,0.0f)),glm::vec3(200.0f,-0.0f,-200.0f));
+    glm::mat4 waterModel = glm::scale(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-15.0f,0.0f)),glm::vec3(400.0f,-0.0f,-400.0f));
 
     while(!glfwWindowShouldClose(window)){
 
