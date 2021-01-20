@@ -8,7 +8,7 @@
 #include "include/camera.h"
 
 #include "include/random_terrain.h"
-
+#include "include/Water.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -138,35 +138,11 @@ int main(void)
     
     camera.setTerrain(&terrain);
 
-    float planeVertices[18] = {
-        0.0f,-20.0f,0.0f,
-        1.0f,-20.0f,0.0f,
-        1.0f,-20.0f,-1.0f,
-  
-        0.0f,-20.0f,0.0f,
-        0.0f,-20.0f,-1.0f,
-        1.0f,-20.0f,-1.0f
-
-    };
-    unsigned int planevao;
-    glGenVertexArrays(1,&planevao);
-    glBindVertexArray(planevao);
-
-    unsigned int planevbo;
-    glGenBuffers(1,&planevbo);
-    glBindBuffer(GL_ARRAY_BUFFER,planevbo);
-    glBufferData(GL_ARRAY_BUFFER,6*3*sizeof(float),planeVertices,GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(float),(void*)0);
-
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-
-    glm::mat4 planeModel = glm::scale(glm::mat4(1.0f),glm::vec3(400.0f,1.0f,400.0f));
-    shader planeShader = shader("res/shaders/2d.shader");
 
 
+    Water water(3,100);
+    water.genBuffer();
+    water.setShader("res/shaders/2d.shader");
 
 
     while(!glfwWindowShouldClose(window)){
@@ -206,21 +182,18 @@ int main(void)
             terrain.treeShader.setUniformMat4f("view",view);
             terrain.treeShader.setUniformMat4f("proj",proj);
         }
-        
-        planeShader.Bind();
-        planeShader.setUniformMat4f("model",planeModel);
-        planeShader.setUniformMat4f("view",view);
-        planeShader.setUniformMat4f("proj",proj);
-        glBindVertexArray(planevao);
-        glDrawArrays(GL_TRIANGLES,0,12);
-
-        glBindVertexArray(0);
-        planeShader.UnBind();
-
-        
-        
-
         terrain.Draw();
+        
+     
+
+        water.waterShader.Bind();        
+        water.waterShader.setUniformMat4f("model",glm::scale(glm::mat4(1.0f),glm::vec3(400.0f,0.0f,-400.0f)));
+        water.waterShader.setUniformMat4f("view",view);
+        water.waterShader.setUniformMat4f("proj",proj);
+        water.Draw();
+        water.waterShader.UnBind();
+
+
 
         if(spacePressed)
         {
