@@ -9,11 +9,14 @@ layout (location = 3) in mat4 modelMatrix;
 out vec2 TexCoords;
 out vec3 norm;
 
+layout(std140) uniform proj_and_view
+{
+    mat4 proj;
+    mat4 view;
+};
 
 
 
-uniform mat4 view;
-uniform mat4 proj;
 uniform mat4 norm_model;
 
 

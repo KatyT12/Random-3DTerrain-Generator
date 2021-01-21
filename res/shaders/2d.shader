@@ -5,9 +5,12 @@
 layout (location = 0) in vec3 position;
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
 
+layout(std140) uniform proj_and_view
+{
+    mat4 proj;
+    mat4 view;
+};
 
 void main()
 {

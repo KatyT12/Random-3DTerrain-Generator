@@ -7,8 +7,12 @@ layout (location = 2) in vec3 a_normal;
 
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 proj;
+
+layout(std140) uniform proj_and_view
+{
+    mat4 proj;
+    mat4 view;
+};
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -65,7 +69,7 @@ void main()
     float spec = pow(max(dot(viewDir,reflectDir),0.0),32);
     vec3 specular = v_Color * spec * light.specular;
 
-    vec3 result = (ambient + diffuse);// + specular); 
+    vec3 result = (ambient + diffuse + specular); 
     FragColor = vec4(result,1.0);
 
 

@@ -709,7 +709,7 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
             glm::vec3 col = colors[(int)colors.size()*newColorMap[i]];
 
 
-            glBufferSubData(GL_ARRAY_BUFFER,i*(6*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+            glBufferSubData(GL_ARRAY_BUFFER,i*getStride()+(3*sizeof(float)),3*sizeof(float),&col[0]);
         }
     }
     else{
