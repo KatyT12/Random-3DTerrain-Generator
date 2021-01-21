@@ -30,10 +30,28 @@ Terrain::Terrain(std::string config_file)
     {    
         terrainShader.makeShader(config_struct.shaderLocation);
     }
-    
-    if(config_struct.trees) treeShader.makeShader(config_struct.treeShader);
+
+
+    shaders.push_back(&terrainShader);
+    if(config_struct.uniformBuffer){
+        terrainShader.proj_and_view_ubo = true;
+    } 
+    if(config_struct.trees) {
+        treeShader.makeShader(config_struct.treeShader);
+        shaders.push_back(&treeShader);
+        if(config_struct.treeUniformBuffer)
+        {
+            treeShader.proj_and_view_ubo = true;
+        }
+    }
 
     if(config_struct.primitive == GL_POINTS || config_struct.genNormals) genIB = false; else genIB = true; 
+    
+    for(int i=0; i < shaders.size();i++)
+    {
+        if(shaders[i]->proj_and_view_ubo)uboShaders.push_back(shaders[i]->getShaderID()); else notUboShaders.push_back(shaders[i]);
+    }
+
 
 }
 
@@ -96,6 +114,7 @@ void Terrain::read_config_file(std::string& name)
 
         if(!grid["treeModel"].isNull()) config_struct.treeModel = grid["treeModel"].asString();
         if(!grid["treeShader"].isNull()) config_struct.treeShader = grid["treeShader"].asString();
+        config_struct.treeUniformBuffer = grid["treeUniformBufferForProjAndView"].asBool();
         config_struct.instancing = grid["instancing"].asBool();
 
     }
@@ -147,6 +166,8 @@ void Terrain::read_config_file(std::string& name)
         config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
         if(!shaderConfig["textureUniformName"].isNull()) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
         config_struct.geometryShader = shaderConfig["geometryShader"].asBool();
+        config_struct.uniformBuffer = shaderConfig["UniformBufferForProjAndView"].asBool();
+
     }
 
     if(!temp["matrices"].isNull())
@@ -681,13 +702,45 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    for(int i = 0; i < config_struct.x * config_struct.y;i++)
+    if(!config_struct.genNormals)
     {
-        glm::vec3 col = colors[(int)colors.size()*newColorMap[i]];
+        for(int i = 0; i < config_struct.x * config_struct.y;i++)
+        {
+            glm::vec3 col = colors[(int)colors.size()*newColorMap[i]];
 
 
-        glBufferSubData(GL_ARRAY_BUFFER,i*(6*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+            glBufferSubData(GL_ARRAY_BUFFER,i*(6*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+        }
     }
+    else{
+        int place = 0;
+        for(int x = 0; x < config_struct.x-1;x++)
+        {
+            for(int y = 0; y < config_struct.y-1;y++)
+            {
+                glm::vec3 col = colors[(int)colors.size()*newColorMap[x*config_struct.y+y]];
+                glBufferSubData(GL_ARRAY_BUFFER,place*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+                
+                col = colors[(int)colors.size()*newColorMap[(x+1)*config_struct.y+y]];
+                glBufferSubData(GL_ARRAY_BUFFER,(place+1)*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+
+                col = colors[(int)colors.size()*newColorMap[(x+1)*config_struct.y+(y+1)]];
+                glBufferSubData(GL_ARRAY_BUFFER,(place+2)*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+
+                col = colors[(int)colors.size()*newColorMap[x*config_struct.y+(y+1)]];
+                glBufferSubData(GL_ARRAY_BUFFER,(place+3)*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+                
+                col = colors[(int)colors.size()*newColorMap[(x+1)*config_struct.y+(y+1)]];
+                glBufferSubData(GL_ARRAY_BUFFER,(place+4)*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+
+                col = colors[(int)colors.size()*newColorMap[(x+1)*config_struct.y+y]];
+                glBufferSubData(GL_ARRAY_BUFFER,(place+5)*(getStride()*sizeof(float))+(3*sizeof(float)),3*sizeof(float),&col[0]);
+                
+                place += 6;
+            }
+        }
+    }
+ 
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 

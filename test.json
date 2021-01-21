@@ -26,6 +26,8 @@
          "maxNumInGrid": 1,
          "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/tree.shader",
+         "treeUniformBufferForProjAndView": false,
+         
          "instancing": true,
 
          "gridX": 30,
@@ -55,6 +57,7 @@
    {
       "shaderLocation": "res/shaders/terrainLightingDirectional.shader",
       "textureUniformName": "u_Texture",
+      "uniformBufferForProjAndView": true,
       "geometryShader": false
    },
 

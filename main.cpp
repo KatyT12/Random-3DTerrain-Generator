@@ -6,6 +6,7 @@
 #include "include/shader.h"
 #include "include/Texture.h"
 #include "include/camera.h"
+#include "include/UniformBuffer.h"
 
 #include "include/random_terrain.h"
 #include "include/Water.h"
@@ -17,6 +18,7 @@
 
 void processInput(GLFWwindow *window);
 void resetColors(std::vector<glm::vec3>& oldColors);
+void setNonUboShaders(std::vector<shader*>& shaders,glm::mat4& proj,glm::mat4& view);
 
 
 
@@ -124,19 +126,16 @@ int main(void)
 
     Terrain terrain = Terrain("test.json");
     terrain.init();
-
-
- 
-	glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);	
-
-	glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
-	glm::mat4 model = glm::mat4(1.0f);	
-    	
-
     //Telling the camera to try and detect collisions. This is very rough and only detects if there is a collision when the forward button is pressed (not any other button) but it is getting there
-    
-    
     camera.setTerrain(&terrain);
+
+    
+    terrain.terrainShader.Bind();
+    terrain.terrainShader.setUniformVec3f("light.direction",glm::vec3(0.6f,-0.6f,-0.3f));
+    terrain.terrainShader.setUniformVec3f("light.ambient",glm::vec3(0.2f,0.2f,0.2f));
+    terrain.terrainShader.setUniformVec3f("light.diffuse",glm::vec3(0.5f,0.5f,0.5f));
+    terrain.terrainShader.setUniformVec3f("light.specular",glm::vec3(0.4f,0.4f,0.4f));
+    terrain.terrainShader.UnBind();
 
 
 
@@ -144,7 +143,26 @@ int main(void)
     water.genBuffer();
     water.setShader("res/shaders/2d.shader");
 
+
     glm::mat4 waterModel = glm::scale(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-15.0f,0.0f)),glm::vec3(400.0f,-0.0f,-400.0f));
+    glm::mat4 model;
+    glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
+    glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
+
+
+    UniformBuffer proj_and_view(2*sizeof(glm::mat4));
+    std::string name = "proj_and_view";
+    
+    std::vector<uint32_t> shaderids;
+    shaderids.push_back(water.waterShader.getShaderID());
+    for(unsigned int s : terrain.uboShaders)
+    {
+        shaderids.push_back(s);
+    }
+    proj_and_view.BindShaders(shaderids,0,name,2*sizeof(glm::mat4));
+    proj_and_view.UpdateBufferPoint(0,&proj[0][0],sizeof(glm::mat4),0);
+    proj_and_view.UpdateBufferPoint(0,&view[0][0],sizeof(glm::mat4),sizeof(glm::mat4));
+
 
     while(!glfwWindowShouldClose(window)){
 
@@ -155,56 +173,35 @@ int main(void)
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
-        glm::mat4 rotation = glm::rotate(glm::mat4(1.0f),(float)glfwGetTime(),glm::vec3(1.0f,0.5f,.0f));
-
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
-		glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
-		
         
+        model = glm::mat4(1.0f);
+        view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
+		proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
+		
+
+        proj_and_view.UpdateBufferPoint(0,&view[0][0],sizeof(glm::mat4),sizeof(glm::mat4));
+        //Update proj and view matrix for all shaders not using the uniform buffer object
+        setNonUboShaders(terrain.notUboShaders,proj,view);
+
         water.waterShader.Bind();        
         water.waterShader.setUniformMat4f("model",waterModel);
-        water.waterShader.setUniformMat4f("view",view);
-        water.waterShader.setUniformMat4f("proj",proj);
+    
         water.Draw();
         water.waterShader.UnBind();
 
-
-
-
-
-
-
-
         terrain.terrainShader.Bind();
         terrain.terrainShader.setUniformMat4f("model",model);
-        terrain.terrainShader.setUniformMat4f("proj",proj);
-        terrain.terrainShader.setUniformMat4f("view",view);
+     
         //Lighting
         terrain.terrainShader.setUniformVec3f("u_viewPos",camera.Position);
-        terrain.terrainShader.setUniformVec3f("light.direction",glm::vec3(0.6f,-0.6f,-0.3f));
-        terrain.terrainShader.setUniformVec3f("light.ambient",glm::vec3(0.2f,0.2f,0.2f));
-        terrain.terrainShader.setUniformVec3f("light.diffuse",glm::vec3(0.5f,0.5f,0.5f));
-        terrain.terrainShader.setUniformVec3f("light.specular",glm::vec3(0.4f,0.4f,0.4f));
-
-
-
+   
 
         if(terrain.treesPresent())
         {
             terrain.treeShader.Bind();
-            terrain.treeShader.setUniformMat4f("view",view);
-            terrain.treeShader.setUniformMat4f("proj",proj);
         }
         terrain.Draw();
         
-     
-
-
-
-
-
         if(spacePressed)
         {
             resetColors(colors);
@@ -271,3 +268,14 @@ void processInput(GLFWwindow *window)
             oldColors.push_back(glm::vec3(randdouble(0,1),randdouble(0,1),randdouble(0,1)));
         }
     }
+
+ void setNonUboShaders(std::vector<shader*>& shaders,glm::mat4& proj,glm::mat4& view)
+ {
+     for(int i=0;i<shaders.size();i++)
+     {
+        shaders[i]->Bind();
+        shaders[i]->setUniformMat4f("proj",proj);
+        shaders[i]->setUniformMat4f("view",view);
+        shaders[i]->UnBind();
+     }
+ }

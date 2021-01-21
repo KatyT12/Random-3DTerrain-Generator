@@ -40,46 +40,49 @@ class UniformBuffer
 
         void BindRange(unsigned int point,unsigned int size, bool autoOffset=true,unsigned int offset=0)
         {
+            unsigned int pointOffset;
             if(!autoOffset)
             {
-                GLCall(glBindBufferRange(GL_UNIFORM_BUFFER,point,offset,m_rendererID,size));
-                 m_points.push_back({offset,point,size});
+                GLCall(glBindBufferRange(GL_UNIFORM_BUFFER,point,m_rendererID,offset,size));
+                pointOffset = offset;
             }
             else
             {
                 GLCall(glBindBufferRange(GL_UNIFORM_BUFFER,point,m_rendererID,m_offset,size));
-                
-                m_points.push_back({m_offset,point,size});
+                pointOffset = m_offset;
             }
+            
+            Point p;
+            p.offset = pointOffset;
+            p.point = point;
+            p.size = size;
+            m_points.push_back(p);
             m_offset += size;
-           
-        
         }
 
         //The name for the uniform block in the shaders must be the same for this function
-        void BindShaders(uint32_t shaderid[],uint32_t shaderCount, unsigned int point, std::string& name,uint32_t size)
+        void BindShaders(std::vector<uint32_t> shaderid, unsigned int point, std::string& name,uint32_t size)
         {
-                        
+            unsigned int shaderCount = shaderid.size();
             for(uint32_t i=0; i<shaderCount;i++)
             {
                 uint32_t shaderIndex = glGetUniformBlockIndex(shaderid[i], name.c_str());
                 GLCall(glUniformBlockBinding(shaderid[i],shaderIndex,point));
             }
-            
             BindRange(point,size);   
         }
 
         const Point GetPoint(const unsigned int bindingPoint) const
         {
-            uint32_t index;
-            for(uint32_t i=0; i<sizeof(m_points);i++)
+            uint32_t index = -1;
+            for(uint32_t i=0; i<m_points.size();i++)
             {
                 if(m_points[i].point == bindingPoint)
                 {
                     index = i;
                 }
             }
-            if(index)
+            if(index != -1)
             {
               return m_points[index];  
             }

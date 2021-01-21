@@ -25,7 +25,7 @@ class shader
         std::unordered_map<std::string,int> m_UniformLocationCache;
 
     public:
-        
+
         shader();
         shader(const std::string& filepath, bool geometry = false);
         void makeShader(const std::string& filepath, bool geometry = false);
@@ -51,6 +51,8 @@ class shader
         int getUniformLocation(const std::string& name);
         
         inline unsigned int getShaderID() const {return m_rendererID;}
+        
+        bool proj_and_view_ubo = false;
         
 
         /* All these are basically copied from main.cpp*/

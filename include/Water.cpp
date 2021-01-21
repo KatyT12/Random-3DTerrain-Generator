@@ -87,7 +87,9 @@ Water::~Water()
 void Water::Draw()
 {
     glBindVertexArray(vao);
+    waterShader.Bind();
+
     glDrawArrays(GL_TRIANGLES,0,(resolution-1) * (resolution-1) * 6 );
     glBindVertexArray(0);
-    
 }
+

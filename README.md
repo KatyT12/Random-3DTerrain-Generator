@@ -29,7 +29,7 @@ This includes:
     . glew
     . assimp 
 
-And likely some other libraries but you are likely to already have them. All of the libraries used are listed in CMakeLists.txt
+And some other libraries but you are likely to already have them. All of the libraries used are listed in CMakeLists.txt
 
 ## Configuration
 

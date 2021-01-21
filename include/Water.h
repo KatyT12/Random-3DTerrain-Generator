@@ -23,10 +23,8 @@ class Water{
         float offsetBtwn;
         glm::vec3 pos;
         glm::mat4 model;
-        
 
         float scaleComponent(float c);
-
         unsigned int vao;
         unsigned int vbo;
 

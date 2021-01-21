@@ -34,6 +34,7 @@ struct Config
     int gridY = 50;
     std::string treeModel = "res/models/tree.obj";
     std::string treeShader = "res/shaders/simple_model.shader";
+    bool treeUniformBuffer = false;
     bool instancing = false; //If you set this to true make sure to use a shader that works with instancing and vice versa
    
     float treeChance = 20; //It is 1 over this number so 1 in 20 chance
@@ -60,10 +61,10 @@ struct Config
     //This shader doesn't take in texture coordinates it just takes colors. for textures change to a shader such as basic.shader or your own shader
     std::string shaderLocation = "res/shaders/color2.shader"; 
     std::string textureUniformName = "u_Texture"; 
+    bool uniformBuffer = false;
     bool geometryShader = false;
-
-
     glm::mat4 modelMatrix = glm::mat4(1.0f);
+    
 
 };  
 
@@ -100,6 +101,10 @@ class Terrain
         Texture terrainTexture;
         shader terrainShader;
         shader treeShader;
+        
+        std::vector<unsigned int> uboShaders;
+        std::vector<shader*> notUboShaders;
+
 
     private:
         void read_config_file(std::string& name);
@@ -137,6 +142,7 @@ class Terrain
         Json::Value* configuration;
         Config config_struct;
         float* height_map;
+        std::vector<shader*> shaders;
         
 
         Model tree;
