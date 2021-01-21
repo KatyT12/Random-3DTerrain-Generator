@@ -71,8 +71,8 @@ genNormals is an option that will generate normals. Right now it is not very ele
 
 ## Examples
 ![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example8.png?raw=true)
-![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example2.png?raw=true)
-![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example6.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example9.png?raw=true)
+![alt text](https://github.com/open-source-KT/Random-3DTerrain-Generator/blob/master/res/examples/example10.png?raw=true)
 
 
 ## TODO:
