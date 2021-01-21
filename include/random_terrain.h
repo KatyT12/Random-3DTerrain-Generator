@@ -26,7 +26,6 @@ struct Config
 
     float collisionOffset = 0.25;
     GLenum primitive = GL_TRIANGLES;
-    bool genNormals = false;
 
 
     bool trees = false;
@@ -65,6 +64,9 @@ struct Config
     bool geometryShader = false;
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     
+    bool genNormals = false;
+    //lighting
+    bool perFaceNormals = true;
 
 };  
 
@@ -133,7 +135,10 @@ class Terrain
         void indexBufferTriangles(unsigned int*& buffer);
         void indexBufferLines(unsigned int*& buffer);
 
-        void generateNormals(float*& vertexBuffer);
+        void generateNormalsPerFace(float*& vertexBuffer);
+        void generateNormalsAveraged(float*& vertexBuffer);
+        glm::vec3 getNormalFromPositions(glm::vec3 posA,glm::vec3 posB,glm::vec3 posC);
+        void setNormalBuffer(glm::vec3*& normalArray);
 
         void genTerrainTrees();
         

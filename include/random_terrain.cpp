@@ -45,7 +45,7 @@ Terrain::Terrain(std::string config_file)
         }
     }
 
-    if(config_struct.primitive == GL_POINTS || config_struct.genNormals) genIB = false; else genIB = true; 
+    if(config_struct.primitive == GL_POINTS || (config_struct.genNormals && config_struct.perFaceNormals)) genIB = false; else genIB = true; 
     
     for(int i=0; i < shaders.size();i++)
     {
@@ -98,7 +98,6 @@ void Terrain::read_config_file(std::string& name)
         if (dimensions["primitive"].asString() == "GL_LINES") config_struct.primitive = GL_LINES;
     }
 
-    config_struct.genNormals = dimensions["genNormals"].asBool();
 
     config_struct.trees = dimensions["trees"].asBool();
 
@@ -188,6 +187,14 @@ void Terrain::read_config_file(std::string& name)
         }
     }
 
+    config_struct.genNormals = temp["genNormals"].asBool();
+    if(!temp["lighting"].isNull() && config_struct.genNormals)
+    {
+        auto lightingConfig = temp["lighting"];
+        config_struct.perFaceNormals = lightingConfig["perFaceNormals"].asBool();
+    }
+
+
 }
 
 //In desperate need of some abstraction idk
@@ -205,13 +212,7 @@ void Terrain::init()
         seeds[i] = randdouble(0.0,1.0);
     }
 
-    /*Set the correct amount of vertex floats for allocating the array and for the vertex buffer depending on whether we are using texture coords or not*/
-
-  
-
-    //Attrin index is the attribute of the  texCoords/colors
     int attribIndex =1;
-
 
     perlInNoise2D(config_struct.x,config_struct.y,seeds,config_struct.octaves,config_struct.bias,map);
 
@@ -230,9 +231,6 @@ void Terrain::init()
         if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
         else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
     }
-    
-    
-    
     
 
     GLCall(glGenVertexArrays(1,&vao));
@@ -266,7 +264,13 @@ void Terrain::init()
 
     if(config_struct.genNormals)
     {
-        generateNormals(vbTerrain);
+        if(config_struct.perFaceNormals)
+        {
+            generateNormalsPerFace(vbTerrain);
+        }
+        else{
+            generateNormalsAveraged(vbTerrain);
+        }
     }
 
 
@@ -283,7 +287,6 @@ void Terrain::init()
 
         //This needs to be after the model is generated for instancing to work
         genTerrainTrees();
-
 
     }
 
@@ -308,7 +311,7 @@ int Terrain::detVbSize(){
     int stride = getStride();
     int size = 0;
 
-    if(config_struct.genNormals)
+    if(config_struct.genNormals && config_struct.perFaceNormals)
     {
         size = (config_struct.x-1)*(config_struct.y-1)*6 * stride;
         return size;
@@ -500,7 +503,7 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
     
     int stride = getStride();
 
-    if(!config_struct.genNormals){
+    if(!config_struct.perFaceNormals){
         for(int x=0; x < config_struct.x; x++)
         {
             for(int y =0; y < config_struct.y;y++)
@@ -510,7 +513,7 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
             }
         }
     }
-    else{
+    else {
      for(int x=0; x < config_struct.x-1; x++)
         {
             for(int y =0; y < config_struct.y-1;y++)
@@ -699,7 +702,7 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
 
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-    if(!config_struct.genNormals)
+    if(!(config_struct.genNormals && config_struct.perFaceNormals))
     {
         for(int i = 0; i < config_struct.x * config_struct.y;i++)
         {
@@ -744,7 +747,7 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
 
 /* This still does not work properly and i need to fix it*/
 
-void Terrain::generateNormals(float*& vertexBuffer)
+void Terrain::generateNormalsPerFace(float*& vertexBuffer)
 {
     glm::vec3* normalArray = new glm::vec3[(detVbSize()/getStride())];
 
@@ -753,32 +756,161 @@ void Terrain::generateNormals(float*& vertexBuffer)
 
     int place = 0;
     int normalPlace = 0;
-    for(int x =0; x < (detVbSize()/getStride())/3; x++)
+    
+        for(int x =0; x < (detVbSize()/getStride())/3; x++)
+        {
+
+            glm::vec3 posA = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+            place += stride;
+            glm::vec3 posB = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+            place += stride;
+            glm::vec3 posC = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+
+            glm::vec3 normal = getNormalFromPositions(posA,posB,posC);
+
+            normalArray[normalPlace] = normal;
+            normalArray[normalPlace+1] = normal;
+            normalArray[normalPlace+2] = normal;
+
+            place += stride;
+            normalPlace += 3;
+        }
+    
+
+
+    setNormalBuffer(normalArray);
+
+
+    delete normalArray;
+}
+
+void Terrain::generateNormalsAveraged(float*& vertexBuffer)
+{
+    glm::vec3* normalArray = new glm::vec3[(detVbSize()/getStride())];
+
+    int stride = getStride();
+    int place = 0;
+
+    for(int x = 0; x < config_struct.x; x++)
     {
-        
-        glm::vec3 posA = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
-        place += stride;
-        glm::vec3 posB = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
-        place += stride;
-        glm::vec3 posC = {vertexBuffer[place],vertexBuffer[place+1],vertexBuffer[place+2]};
+        for(int y = 0; y < config_struct.y; y++)
+        {
+            std::vector<glm::vec3> norms;
+            
+            glm::vec3 self;
+            glm::vec3 up;
+            glm::vec3 left;
+
+            glm::vec3 topleft;
+            glm::vec3 down;
+            glm::vec3 right;
+            glm::vec3 bottomright;
+
+            self = {vertexBuffer[stride*(x*config_struct.x + y)],vertexBuffer[stride*(x*config_struct.x + y)+1],vertexBuffer[stride*(x*config_struct.x + y)+2]}; 
+            
+            if(!(x < 1))
+            {
+                left = {vertexBuffer[stride*((x-1)*config_struct.x + y)],vertexBuffer[stride*((x-1)*config_struct.x + y)+1],vertexBuffer[stride*((x-1)*config_struct.x + y)+2]}; 
+                if(!(y>config_struct.y-1))
+                {
+                    topleft = {vertexBuffer[stride*((x+1)*config_struct.x + y-1)],vertexBuffer[stride*((x+1)*config_struct.x + y-1)+1],vertexBuffer[stride*((x+1)*config_struct.x + y-1)+2]}; 
+                }
+            }
+            if(!(x > config_struct.x-1))
+            {
+                right = {vertexBuffer[stride*((x+1)*config_struct.x + y)],vertexBuffer[stride*((x+1)*config_struct.x + y)+1],vertexBuffer[stride*((x+1)*config_struct.x + y)+2]}; 
+                if(!(y<1))
+                {
+                    bottomright = {vertexBuffer[stride*((x+1)*config_struct.x + y-1)],vertexBuffer[stride*((x+1)*config_struct.x + y-1)+1],vertexBuffer[stride*((x+1)*config_struct.x + y-1)+2]}; 
+                }
+            }
+            if(!(y < 1))
+            {
+                down = {vertexBuffer[stride*(x*config_struct.x + y-1)],vertexBuffer[stride*(x*config_struct.x + y-1)+1],vertexBuffer[stride*(x*config_struct.x + y-1)+2]}; 
+            }
+            if(!(y>config_struct.y-1))
+            {
+                up = {vertexBuffer[stride*(x*config_struct.x + y+1)],vertexBuffer[stride*(x*config_struct.x + y+1)+1],vertexBuffer[stride*(x*config_struct.x + y+1)+2]}; 
+            }
+
+            if(!(x<1))
+            {
+                if(!(y<1))
+                {
+                  norms.push_back(getNormalFromPositions(left,self,down));
+                }
+                if(!(y>config_struct.y-1))
+                {
+                  norms.push_back(getNormalFromPositions(up,self,topleft));
+                  norms.push_back(getNormalFromPositions(left,self,topleft));
+                }
+            }      
+            if(!(x>config_struct.x-1))
+            {
+                if(!(y<1))
+                {
+                    norms.push_back(getNormalFromPositions(bottomright,self,down));
+                    norms.push_back(getNormalFromPositions(bottomright,self,right));
+                }
+                if(!(y>config_struct.y-1))
+                {
+                    norms.push_back(getNormalFromPositions(up,self,right));
+                }
+            }        
+            glm::vec3 total = {0,0,0};
+            int divisor = 1;
+            for(int i =0;i<6;i++)
+            {
+                if(!(norms[i] == glm::vec3(-1.0f,-1.0f,-1.0f)))
+                {
+                    total.x += norms[i].x;
+                    total.y += norms[i].y;
+                    total.z += norms[i].z;
+                    divisor++;
+                }
+            }
+            glm::vec3 normal = {total.x/divisor,total.y/divisor,total.z/divisor};
+
+            normalArray[place] = normal;
+            place++;
+        }
+    }
+        /*
+        glm::vec3 posA = {vertexBuffer[indices[place]*stride],vertexBuffer[(indices[place]*stride)+1],vertexBuffer[(indices[place]*stride)+2]};
+        place++;
+        glm::vec3 posB = {vertexBuffer[indices[place]*stride],vertexBuffer[(indices[place]*stride)+1],vertexBuffer[(indices[place]*stride)+2]};
+        place++;
+        glm::vec3 posC = {vertexBuffer[indices[place]*stride],vertexBuffer[(indices[place]*stride)+1],vertexBuffer[(indices[place]*stride)+2]};
+        place++;
 
         glm::vec3 vecA = posB - posA;
         glm::vec3 vecB = posC - posA;
-
         glm::vec3 normal = glm::normalize(glm::cross(vecA,vecB));
         if(normal.y < 0)
         {
             normal = normal * glm::vec3(-1.0f,-1.0f,-1.0f);
         }
+        unAveragedNormals[i] = normal;*/
+    
+    setNormalBuffer(normalArray);
+    delete normalArray;
+}
 
-        normalArray[normalPlace] = normal;
-        normalArray[normalPlace+1] = normal;
-        normalArray[normalPlace+2] = normal;
-
-        place += stride;
-        normalPlace += 3;
+glm::vec3 Terrain::getNormalFromPositions(glm::vec3 posA,glm::vec3 posB,glm::vec3 posC)
+{
+  
+    glm::vec3 vecA = posB - posA;
+    glm::vec3 vecB = posC - posA;
+    glm::vec3 normal = glm::normalize(glm::cross(vecA,vecB));
+    if(normal.y < 0)
+    {
+        normal = normal * glm::vec3(-1.0f,-1.0f,-1.0f);
     }
+    return normal;
+}
 
+void Terrain::setNormalBuffer(glm::vec3*& normalArray)
+{
     GLCall(glGenBuffers(1,&normals));
     
     GLCall(glBindVertexArray(vao));
@@ -792,7 +924,6 @@ void Terrain::generateNormals(float*& vertexBuffer)
 
     GLCall(glBindBuffer(GL_ARRAY_BUFFER,0));
     glBindVertexArray(0);
-
-
-    delete normalArray;
 }
+
+

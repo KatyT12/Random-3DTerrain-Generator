@@ -1,7 +1,7 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.4,
+      "bias" : 1.6,
       "octaves" : 9,
       "seed" : 121232
    },
@@ -17,7 +17,6 @@
       "collisionOffset": 0.45,
 
       "primitive": "GL_TRIANGLES",
-      "genNormals": true,
 
       "trees": true,
       "grid":
@@ -26,7 +25,7 @@
          "maxNumInGrid": 1,
          "treeModel": "res/models/tree.obj",
          "treeShader": "res/shaders/tree.shader",
-         "treeUniformBufferForProjAndView": false,
+         "treeUniformBufferForProjAndView": true,
          
          "instancing": true,
 
@@ -51,6 +50,12 @@
 
       "color1": [0.5,0.8,0.3],
       "color2": [0.8,0.3,0.2]
+   },
+   
+   "genNormals": true,
+   "lighting":
+   {
+      "perFaceNormals": false
    },
 
    "shader":
