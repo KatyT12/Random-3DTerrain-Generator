@@ -207,7 +207,6 @@ void Terrain::init()
 
     /*Set the correct amount of vertex floats for allocating the array and for the vertex buffer depending on whether we are using texture coords or not*/
 
-    int nVertexFloats = getStride();
   
 
     //Attrin index is the attribute of the  texCoords/colors
@@ -216,8 +215,6 @@ void Terrain::init()
 
     perlInNoise2D(config_struct.x,config_struct.y,seeds,config_struct.octaves,config_struct.bias,map);
 
-    int offset = 0.4;
-    
     int stride = getStride();
 
     float *vbTerrain = new float[detVbSize()];
@@ -251,7 +248,7 @@ void Terrain::init()
     GLCall(glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,getStride()*sizeof(float),(void*)0));
 
     GLCall(glEnableVertexAttribArray(attribIndex));
-    GLCall(glVertexAttribPointer(attribIndex,nVertexFloats-3,GL_FLOAT,GL_FALSE,getStride()*sizeof(float),(void*)(3*sizeof(float))));
+    GLCall(glVertexAttribPointer(attribIndex,stride-3,GL_FLOAT,GL_FALSE,getStride()*sizeof(float),(void*)(3*sizeof(float))));
     
 
     if(genIB)
@@ -707,9 +704,7 @@ void Terrain::newColors(std::vector<glm::vec3>& colors)
         for(int i = 0; i < config_struct.x * config_struct.y;i++)
         {
             glm::vec3 col = colors[(int)colors.size()*newColorMap[i]];
-
-
-            glBufferSubData(GL_ARRAY_BUFFER,i*getStride()+(3*sizeof(float)),3*sizeof(float),&col[0]);
+            glBufferSubData(GL_ARRAY_BUFFER,i*getStride()*sizeof(float)+(3*sizeof(float)),3*sizeof(float),&col[0]);
         }
     }
     else{

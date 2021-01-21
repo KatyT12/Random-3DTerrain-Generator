@@ -4,12 +4,12 @@
 layout (location = 0) in vec4 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
-layout (location = 3) in mat4 modelMatrix;
+layout (location = 3) in mat4 modelMatrix; //instancing
 
 out vec2 TexCoords;
 out vec3 norm;
 
-layout(std140) uniform proj_and_view
+layout(std140) uniform proj_and_view //uniform buffer
 {
     mat4 proj;
     mat4 view;
