@@ -8,6 +8,7 @@
 #include "shader.h"
 #include "model.h"
 #include <glm/gtc/type_ptr.hpp>
+#include "Water.h"
 
 
 struct Config
@@ -67,6 +68,11 @@ struct Config
     bool genNormals = false;
     //lighting
     bool perFaceNormals = true;
+
+
+    bool waterTrue = false;
+    float waterHeight = -20.0f;
+    glm::vec3 waterColor = {0.0f,1.0f,0.0f};
 
 };  
 
@@ -142,7 +148,7 @@ class Terrain
 
         void genTerrainTrees();
         
-
+        Water waterObj;
 
         Json::Value* configuration;
         Config config_struct;

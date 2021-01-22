@@ -1,8 +1,8 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.6,
-      "octaves" : 9,
+      "bias" : 1.2,
+      "octaves" : 6,
       "seed" : 121232
    },
    "dimensions":
@@ -56,6 +56,13 @@
    "lighting":
    {
       "perFaceNormals": false
+   },
+   
+   "waterPresent": true,
+   "water":
+   {
+      "waterY": 70,
+      "waterColor": [0,1,0]   
    },
 
    "shader":

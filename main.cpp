@@ -138,13 +138,6 @@ int main(void)
     terrain.terrainShader.UnBind();
 
 
-
-    Water water(10,100);
-    water.genBuffer();
-    water.setShader("res/shaders/2d.shader");
-
-
-    glm::mat4 waterModel = glm::scale(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-15.0f,0.0f)),glm::vec3(400.0f,-0.0f,-400.0f));
     glm::mat4 model;
     glm::mat4 view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
     glm::mat4 proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
@@ -154,7 +147,6 @@ int main(void)
     std::string name = "proj_and_view";
     
     std::vector<uint32_t> shaderids;
-    shaderids.push_back(water.waterShader.getShaderID());
     for(unsigned int s : terrain.uboShaders)
     {
         shaderids.push_back(s);
@@ -180,14 +172,11 @@ int main(void)
 		
 
         proj_and_view.UpdateBufferPoint(0,&view[0][0],sizeof(glm::mat4),sizeof(glm::mat4));
+        proj_and_view.UpdateBufferPoint(0,&proj[0][0],sizeof(glm::mat4),0);
+
         //Update proj and view matrix for all shaders not using the uniform buffer object
         setNonUboShaders(terrain.notUboShaders,proj,view);
 
-        water.waterShader.Bind();        
-        water.waterShader.setUniformMat4f("model",waterModel);
-    
-        water.Draw();
-        water.waterShader.UnBind();
 
         terrain.terrainShader.Bind();
         terrain.terrainShader.setUniformMat4f("model",model);

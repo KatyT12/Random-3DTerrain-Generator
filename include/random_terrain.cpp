@@ -31,11 +31,14 @@ Terrain::Terrain(std::string config_file)
         terrainShader.makeShader(config_struct.shaderLocation);
     }
 
+ 
 
     shaders.push_back(&terrainShader);
+    shaders.push_back(&waterObj.waterShader);
     if(config_struct.uniformBuffer){
         terrainShader.proj_and_view_ubo = true;
     } 
+
     if(config_struct.trees) {
         treeShader.makeShader(config_struct.treeShader);
         shaders.push_back(&treeShader);
@@ -194,6 +197,21 @@ void Terrain::read_config_file(std::string& name)
         config_struct.perFaceNormals = lightingConfig["perFaceNormals"].asBool();
     }
 
+    config_struct.waterTrue = temp["waterPresent"].asBool();
+    if(config_struct.waterTrue)
+    {
+        if(!temp["water"].isNull())
+        {
+            auto waterConfig = temp["water"];
+            if(!waterConfig["waterHeight"].isNull()) config_struct.waterHeight = waterConfig["waterHeight"].asFloat();
+            if(!waterConfig["waterColor"].isNull())
+            {
+                Json::Value tmp = waterConfig["waterColor"];
+                config_struct.waterColor = {tmp[0].asFloat(),tmp[1].asFloat(),tmp[2].asFloat()};
+            }
+        }
+    }
+
 
 }
 
@@ -288,6 +306,14 @@ void Terrain::init()
         //This needs to be after the model is generated for instancing to work
         genTerrainTrees();
 
+    }
+
+    if(config_struct.waterTrue)
+    {
+        waterObj = Water(10,config_struct.x*config_struct.offset);
+        waterObj.setHeight(config_struct.waterHeight);
+        waterObj.genBuffer();
+        waterObj.setShader("res/shaders/2d.shader");
     }
 
 }
@@ -448,30 +474,27 @@ void Terrain::Draw(GLenum primitive)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
 
     terrainShader.Bind();
-
     terrainShader.setUniformMat4f("model",config_struct.modelMatrix);
-
-    if(config_struct.texture)
-    {
+    if(config_struct.texture){
         terrainTexture.Bind(config_struct.textureSlot);
         terrainShader.setUniform1i(config_struct.textureUniformName,config_struct.textureSlot); 
 
     }
-
-    if(genIB)
-    {
+    if(genIB){
         glDrawElements(primitive,config_struct.x * config_struct.y * 6,GL_UNSIGNED_INT,nullptr);
     }
-    else
-    {
+    else{
         glDrawArrays(primitive,0,detVbSize()/getStride());
     }
     
     terrainShader.UnBind();
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+    
     if(config_struct.trees)
     {
-        treeShader.Bind(); 
-        
+        treeShader.Bind();
         if(!config_struct.instancing)
         {
             for(int i = 0; i < treeModelMatrices.size(); i++)
@@ -488,8 +511,12 @@ void Terrain::Draw(GLenum primitive)
         treeShader.UnBind();
 
     }
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-    glBindVertexArray(0);
+    if(config_struct.waterTrue)
+    {
+        waterObj.Draw();
+    }
+
+   
     
 
 }
