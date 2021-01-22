@@ -32,9 +32,8 @@ Terrain::Terrain(std::string config_file)
     }
 
  
-
     shaders.push_back(&terrainShader);
-    shaders.push_back(&waterObj.waterShader);
+    if(config_struct.waterTrue)shaders.push_back(&waterObj.waterShader);
     if(config_struct.uniformBuffer){
         terrainShader.proj_and_view_ubo = true;
     } 
@@ -237,6 +236,7 @@ void Terrain::init()
     int stride = getStride();
 
     float *vbTerrain = new float[detVbSize()];
+
     genVertexBuffer(vbTerrain,map);
 
 
@@ -245,6 +245,7 @@ void Terrain::init()
     //There is no need for an index buffer if we are just drawing the points
     if(genIB) 
     {
+
         terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; 
         if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
         else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
@@ -312,6 +313,7 @@ void Terrain::init()
     {
         waterObj = Water(10,config_struct.x*config_struct.offset);
         waterObj.setHeight(config_struct.waterHeight);
+        waterObj.waterColor = config_struct.waterColor;
         waterObj.genBuffer();
         waterObj.setShader("res/shaders/2d.shader");
     }
@@ -530,7 +532,7 @@ void Terrain::genVertexBuffer(float*& vbTerrain,float*& map)
     
     int stride = getStride();
 
-    if(!config_struct.perFaceNormals){
+    if(!config_struct.genNormals || (!config_struct.perFaceNormals)){
         for(int x=0; x < config_struct.x; x++)
         {
             for(int y =0; y < config_struct.y;y++)

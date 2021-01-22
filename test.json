@@ -62,7 +62,7 @@
    "water":
    {
       "waterY": 70,
-      "waterColor": [0,1,0]   
+      "waterColor": [0,0.4,0.7]   
    },
 
    "shader":
