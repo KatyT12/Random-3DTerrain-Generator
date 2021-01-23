@@ -7,6 +7,7 @@
 #include "include/Texture.h"
 #include "include/camera.h"
 #include "include/UniformBuffer.h"
+#include "include/sceneRenderer.h"
 
 #include "include/random_terrain.h"
 #include "include/Water.h"
@@ -156,6 +157,12 @@ int main(void)
     proj_and_view.UpdateBufferPoint(0,&view[0][0],sizeof(glm::mat4),sizeof(glm::mat4));
 
 
+    sceneRenderer renderer;
+    renderer.setCameraPosition(camera.Position);
+    renderer.setUniformBuffer(&proj_and_view);
+    renderer.setTerrain(&terrain);
+    
+
     while(!glfwWindowShouldClose(window)){
 
 
@@ -170,26 +177,11 @@ int main(void)
         view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
 		proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
 		
-
-        proj_and_view.UpdateBufferPoint(0,&view[0][0],sizeof(glm::mat4),sizeof(glm::mat4));
-        proj_and_view.UpdateBufferPoint(0,&proj[0][0],sizeof(glm::mat4),0);
-
-        //Update proj and view matrix for all shaders not using the uniform buffer object
-        setNonUboShaders(terrain.notUboShaders,proj,view);
+        renderer.setproj(proj);
+        renderer.setView(view);
+        renderer.DrawScene();
 
 
-        terrain.terrainShader.Bind();
-        terrain.terrainShader.setUniformMat4f("model",model);
-     
-        //Lighting
-        terrain.terrainShader.setUniformVec3f("u_viewPos",camera.Position);
-   
-
-        if(terrain.treesPresent())
-        {
-            terrain.treeShader.Bind();
-        }
-        terrain.Draw();
         
         if(spacePressed)
         {
