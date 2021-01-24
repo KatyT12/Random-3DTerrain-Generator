@@ -37,7 +37,7 @@
    {
       "staticColor": false,
       
-      "texture": false, 
+      "texture": true, 
       "textureLocation": "res/textures/terrainGrass.jpg",
       "textureSlot": 2,
       
@@ -67,7 +67,7 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/terrainLightingDirectional.shader",
+      "shaderLocation": "res/shaders/terrainLightingWithTexture.shader",
       "textureUniformName": "u_Texture",
       "uniformBufferForProjAndView": true,
       "geometryShader": false
