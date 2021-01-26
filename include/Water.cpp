@@ -71,6 +71,7 @@ void Water::fillVertex(float*& buffer,int place, int x, int z)
 void Water::setShader(std::string path)
 {
     waterShader.makeShader(path);
+    waterShader.proj_and_view_ubo = true;
 }
 
 Water::~Water()

@@ -33,6 +33,7 @@ Terrain::Terrain(std::string config_file)
 
  
     shaders.push_back(&terrainShader);
+
     if(config_struct.waterTrue)shaders.push_back(&waterObj.waterShader);
     if(config_struct.uniformBuffer){
         terrainShader.proj_and_view_ubo = true;
@@ -46,12 +47,17 @@ Terrain::Terrain(std::string config_file)
             treeShader.proj_and_view_ubo = true;
         }
     }
-
     if(config_struct.primitive == GL_POINTS || (config_struct.genNormals && config_struct.perFaceNormals)) genIB = false; else genIB = true; 
     
     for(int i=0; i < shaders.size();i++)
     {
-        if(shaders[i]->proj_and_view_ubo)uboShaders.push_back(shaders[i]->getShaderID()); else notUboShaders.push_back(shaders[i]);
+        if(shaders[i]->proj_and_view_ubo){
+            uboShaders.push_back(shaders[i]->getShaderID());
+        }
+        else {
+            notUboShaders.push_back(shaders[i]);
+        }
+
     }
 
 
@@ -167,7 +173,7 @@ void Terrain::read_config_file(std::string& name)
         config_struct.shaderLocation = shaderConfig["shaderLocation"].asString();
         if(!shaderConfig["textureUniformName"].isNull()) config_struct.textureUniformName = shaderConfig["textureUniformName"].asString();
         config_struct.geometryShader = shaderConfig["geometryShader"].asBool();
-        config_struct.uniformBuffer = shaderConfig["UniformBufferForProjAndView"].asBool();
+        config_struct.uniformBuffer = shaderConfig["uniformBufferForProjAndView"].asBool();
 
     }
 
@@ -658,17 +664,20 @@ void Terrain::genTerrainTrees()
 
                 for(int i = 0; i < amount; i++)
                 {
-                    treePositions.push_back({x,y});
-                    
+                    glm::vec2 temp = {x,y};
                     float xOffset = randdouble(0,config_struct.gridX);
                     float zOffset = randdouble(0,config_struct.gridY);
 
 
-                    float positionX = ((treePositions[treePositions.size()-1][0] * config_struct.gridX) + xOffset) * config_struct.offset;
-                    float positionZ = ((treePositions[treePositions.size()-1][1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
+                    float positionX = ((temp[0] * config_struct.gridX) + xOffset) * config_struct.offset;
+                    float positionZ = ((temp[1] * config_struct.gridY) + zOffset) * config_struct.offset * -1;
                     float positionY = getTerrainHeight(positionX+config_struct.posX,positionZ + config_struct.posY);
 
-                    treeModelMatrices.push_back(config_struct.modelMatrix * glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+                    if(!config_struct.waterTrue || (config_struct.modelMatrix*glm::vec4(positionX,positionY,positionZ,1.0f)).y > config_struct.waterHeight)
+                    {
+                        treePositions.push_back({x,y});
+                        treeModelMatrices.push_back(config_struct.modelMatrix * glm::translate(glm::mat4(1.0f),glm::vec3(positionX,positionY,positionZ)));
+                    }
                 }
 
 
