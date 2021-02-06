@@ -17,9 +17,6 @@ void main()
     gl_Position = pos.xyww; 
 }
    
-
-
-
 #shader fragment
 #version 330 core
 
@@ -35,9 +32,9 @@ void main()
 	vec4 texColor = texture(cubemap,v_TexCoords);
 	
     FragColor = texColor;
-	//FragColor = vec4(1.0,0,0.0,1.0);
 
 
 };
+
 
 //origin advanced/main6.cpp

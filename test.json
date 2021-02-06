@@ -1,8 +1,8 @@
 {
    "perlinnoise" : 
    {
-      "bias" : 1.2,
-      "octaves" : 6,
+      "bias" : 1.4,
+      "octaves" : 9,
       "seed" : 121232
       },
    "dimensions":
@@ -37,7 +37,7 @@
    {
       "staticColor": false,
       
-      "texture": false, 
+      "texture": true, 
       "textureLocation": "res/textures/terrainGrass.jpg",
       "textureSlot": 2,
       
@@ -62,12 +62,13 @@
    "water":
    {
       "waterY": 70,
-      "waterColor": [0,0.4,0.7]   
+      "waterColor": [0,0.4,0.7],
+      "useFrameBuffers": false
    },
 
    "shader":
    {
-      "shaderLocation": "res/shaders/terrainLightingDirectional.shader",
+      "shaderLocation": "res/shaders/terrainLightingWithTexture.shader",
       "textureUniformName": "u_Texture",
       "uniformBufferForProjAndView": true,
       "geometryShader": false

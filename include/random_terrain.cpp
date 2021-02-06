@@ -70,6 +70,16 @@ Terrain::~Terrain()
     delete configuration;
     
     delete height_map;
+
+    glDeleteVertexArrays(1,&vao);
+    glDeleteBuffers(1,&vbo);
+    
+    if(genIB)
+    {
+        glDeleteBuffers(1,&ib);    
+    }
+
+
 }
 
 
@@ -213,6 +223,7 @@ void Terrain::read_config_file(std::string& name)
             {
                 Json::Value tmp = waterConfig["waterColor"];
                 config_struct.waterColor = {tmp[0].asFloat(),tmp[1].asFloat(),tmp[2].asFloat()};
+                config_struct.useFrameBuffers = waterConfig["useFrameBuffers"].asBool();
             }
         }
     }
@@ -249,14 +260,13 @@ void Terrain::init()
     unsigned int* terrainIB;
     
     //There is no need for an index buffer if we are just drawing the points
-    if(genIB) 
+    if(genIB)
     {
 
         terrainIB = new unsigned int[(config_struct.x-1)*(config_struct.y-1)*6]; 
         if(config_struct.primitive == GL_TRIANGLES) indexBufferTriangles(terrainIB);
         else if(config_struct.primitive == GL_LINES) indexBufferLines(terrainIB);
     }
-    
 
     GLCall(glGenVertexArrays(1,&vao));
     GLCall(glBindVertexArray(vao));
@@ -322,6 +332,7 @@ void Terrain::init()
         waterObj.waterColor = config_struct.waterColor;
         waterObj.genBuffer();
         waterObj.setShader("res/shaders/2d.shader");
+  
     }
 
 }
@@ -476,8 +487,7 @@ void Terrain::determineTexAttrib(float*& buffer,int x, int y, int place)
 void Terrain::Draw(GLenum primitive)
 {
     if(primitive == -1) primitive = config_struct.primitive;
-
-
+    
     glBindVertexArray(vao);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,ib);
 
@@ -519,14 +529,10 @@ void Terrain::Draw(GLenum primitive)
         treeShader.UnBind();
 
     }
-    if(config_struct.waterTrue)
+    if(config_struct.waterTrue && !fboMode)
     {
         waterObj.Draw();
     }
-
-   
-    
-
 }
 
 //For primitive GL_TRIANGLES
@@ -965,3 +971,11 @@ void Terrain::setNormalBuffer(glm::vec3*& normalArray)
 }
 
 
+void Terrain::bindFrameBuffer(int index){
+    waterObj.bindFrameBuffer(index);
+}
+
+
+void Terrain::unbindFrameBuffer(){
+    waterObj.unbindFrameBuffer();
+}

@@ -8,14 +8,13 @@
 #include "include/camera.h"
 #include "include/UniformBuffer.h"
 #include "include/sceneRenderer.h"
+#include "include/Cubemap.h"
 
 #include "include/random_terrain.h"
 #include "include/Water.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-
 
 void processInput(GLFWwindow *window);
 void resetColors(std::vector<glm::vec3>& oldColors);
@@ -63,8 +62,6 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
      camera.processScroll(yoffset);
 }
 
-
-
 int main(void)
 {
 
@@ -79,15 +76,14 @@ int main(void)
 	
     //Antialiasing
     glfwWindowHint(GLFW_SAMPLES, 4);
-	
-    window = glfwCreateWindow(960, 540, "Random terrain", NULL, NULL);
+
+    window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Random terrain", NULL, NULL);
     
     if (!window)
     {
         glfwTerminate();
         return -1;
     }
-
 
 
     glfwMakeContextCurrent(window);
@@ -125,12 +121,28 @@ int main(void)
     resetColors(colors);
 
 
+
+    std::vector<std::string> faces{
+        "res/textures/skybox/wrath_ft.jpg",
+        "res/textures/skybox/wrath_bk.jpg",
+        "res/textures/skybox/wrath_up.jpg",
+        "res/textures/skybox/wrath_dn.jpg",
+        "res/textures/skybox/wrath_rt.jpg",
+        "res/textures/skybox/wrath_lf.jpg",
+
+    };
+
+    Cubemap cubemap(GL_TEXTURE_2D,DISPLAY_WIDTH/2,DISPLAY_HEIGHT/2,faces,GL_CLAMP_TO_EDGE);
+    cubemap.initBuffer();
+
+
     Terrain terrain = Terrain("test.json");
     terrain.init();
     //Telling the camera to try and detect collisions. This is very rough and only detects if there is a collision when the forward button is pressed (not any other button) but it is getting there
     camera.setTerrain(&terrain);
 
     
+
     terrain.terrainShader.Bind();
     terrain.terrainShader.setUniformVec3f("light.direction",glm::vec3(0.6f,-0.6f,-0.3f));
     terrain.terrainShader.setUniformVec3f("light.ambient",glm::vec3(0.2f,0.2f,0.2f));
@@ -161,7 +173,8 @@ int main(void)
     renderer.setCameraPosition(camera.Position);
     renderer.setUniformBuffer(&proj_and_view);
     renderer.setTerrain(&terrain);
-    
+    renderer.setCubeMap(&cubemap);
+    renderer.setCamera(&camera);
 
     while(!glfwWindowShouldClose(window)){
 
@@ -194,6 +207,7 @@ int main(void)
 
         glfwPollEvents();
 	    processInput(window);
+
 
 
      }
