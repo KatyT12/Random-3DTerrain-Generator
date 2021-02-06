@@ -13,6 +13,9 @@ bool GLLogCall(const char* function, const char* file, int line);
 
 #define ASSERT(x) if(!(x)) raise(SIGTRAP);
 
+#define DISPLAY_WIDTH 960
+#define DISPLAY_HEIGHT 640
+
 class renderer
 {
 	public:

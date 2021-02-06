@@ -96,7 +96,6 @@ inline double randdouble(double min, double max)
 
                 }
             }
-
         }
 
 #endif

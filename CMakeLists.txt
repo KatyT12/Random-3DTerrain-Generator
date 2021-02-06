@@ -45,7 +45,7 @@ endif()
 target_link_libraries(LibsModule jsoncpp)
 
 
-ADD_EXECUTABLE(main main.cpp include/camera.cpp  include/shader.cpp include/Texture.cpp  vender/stb_image/stb_image.cpp include/random_terrain.cpp include/renderer.cpp include/Water.cpp include/sceneRenderer.cpp)
+ADD_EXECUTABLE(main main.cpp include/camera.cpp  include/shader.cpp include/Texture.cpp  vender/stb_image/stb_image.cpp include/random_terrain.cpp include/renderer.cpp include/Water.cpp include/sceneRenderer.cpp include/Cubemap.cpp)
 
 
 target_link_libraries(main LibsModule)    

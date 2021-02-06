@@ -10,7 +10,6 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Water.h"
 
-
 struct Config
 {
     int octaves = 7;
@@ -73,6 +72,7 @@ struct Config
     bool waterTrue = false;
     float waterHeight = -20.0f;
     glm::vec3 waterColor = {0.0f,1.0f,0.0f};
+    bool useFrameBuffers = false;
 
 };  
 
@@ -103,6 +103,11 @@ class Terrain
         inline glm::mat4 getTerrainModelMatrix(){return config_struct.modelMatrix;};
         inline void setTerrainModelMatrix(glm::mat4 newModel){config_struct.modelMatrix = newModel;}
         inline bool treesPresent()const {return config_struct.trees;}
+        inline bool usingFbo(){return config_struct.useFrameBuffers;}
+        inline float getWaterHeight(){return waterObj.getHeight();}
+        inline void bindWaterReflectionAttachment(int slot = 0){waterObj.bindTextureAttachment(0,slot);}
+        inline void bindWaterRefractionAttachment(int slot = 0){waterObj.bindTextureAttachment(1,slot);}
+
 
         float length;
         float width;
@@ -112,6 +117,11 @@ class Terrain
         
         std::vector<unsigned int> uboShaders;
         std::vector<shader*> notUboShaders;
+
+        bool fboMode = false;
+
+        void bindFrameBuffer(int index);
+        void unbindFrameBuffer();
 
 
     private:
@@ -148,12 +158,12 @@ class Terrain
 
         void genTerrainTrees();
         
-        Water waterObj;
 
         Json::Value* configuration;
         Config config_struct;
         float* height_map;
         std::vector<shader*> shaders;
+        Water waterObj;
         
 
         Model tree;
