@@ -22,8 +22,9 @@ class sceneRenderer
 		void setNonUboShaders(std::vector<shader*>& shaders,glm::mat4& proj,glm::mat4& view);
 		Cubemap* cubemap;
 		Camera* camera;
-
 		
+		Model* playerModel;
+		shader* playerModelShader;
 
 	public:
 
@@ -70,6 +71,9 @@ class sceneRenderer
 		inline void setTerrain(Terrain* t){terrain = t;}
 		inline void setCameraPosition(glm::vec3 t){cameraPosition = t;}
 		inline void setUniformBuffer(UniformBuffer* t){proj_and_view = t;}
+		
+		inline void setPlayerModel(Model* p){playerModel = p;}
+		inline void setPlayerModelShader(shader* s){playerModelShader =s;}
 
 		inline void setproj(glm::mat4 t){proj = t;}
 		inline void setView(glm::mat4 t){view = t;}

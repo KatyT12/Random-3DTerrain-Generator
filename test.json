@@ -14,7 +14,7 @@
       "posY": 0,
       "offset":0.4,
       
-      "collisionOffset": 0.45,
+      "collisionOffset": 2.9,
 
       "primitive": "GL_TRIANGLES",
 
@@ -37,7 +37,7 @@
    {
       "staticColor": false,
       
-      "texture": true, 
+      "texture": false, 
       "textureLocation": "res/textures/terrainGrass.jpg",
       "textureSlot": 2,
       
@@ -68,7 +68,7 @@
 
    "shader":
    {
-      "shaderLocation": "res/shaders/terrainLightingWithTexture.shader",
+      "shaderLocation": "res/shaders/terrainLightingDirectional.shader",
       "textureUniformName": "u_Texture",
       "uniformBufferForProjAndView": true,
       "geometryShader": false

@@ -29,9 +29,14 @@ void sceneRenderer::DrawScene()
             proj_and_view->UpdateBufferPoint(0,&proj[0][0],sizeof(glm::mat4),0);
     
             //Update proj and view matrix for all shaders not using the uniform buffer object 
-            
             setNonUboShaders(terrain->notUboShaders,proj,view);
 
+            if(playerModel != nullptr)
+            {
+                playerModelShader->Bind();
+                playerModelShader->setUniformVec3f("u_viewPos",camera->Position);
+                playerModel->Draw(*playerModelShader,true);
+            }
             drawCubeMap();
         
 
@@ -76,6 +81,12 @@ void sceneRenderer::DrawScene()
         setNonUboShaders(terrain->notUboShaders,proj,view);
 
         drawCubeMap();
+
+        if(playerModel != nullptr)
+        {
+            playerModelShader->Bind();
+            playerModel->Draw(*playerModelShader,false);
+        }
 
         terrain->terrainShader.Bind();
     
