@@ -92,6 +92,13 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 
 int main(int argc, char* argv[])
 {
+    std::string config = "test.json";
+    if(argc > 1)
+    {
+        config = argv[1];
+    }
+
+
     Display display;
     GLFWwindow* window = setupContext(display);
 
@@ -114,7 +121,7 @@ int main(int argc, char* argv[])
     cubemap.initBuffer();
 
 
-    Terrain terrain = Terrain("test.json");
+    Terrain terrain = Terrain(config);
     terrain.init();
     //Telling the camera to try and detect collisions. This is very rough and only detects if there is a collision when the forward button is pressed (not any other button) but it is getting there
     camera.setTerrain(&terrain);
