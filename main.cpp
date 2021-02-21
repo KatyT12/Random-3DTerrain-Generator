@@ -10,6 +10,7 @@
 #include "include/sceneRenderer.h"
 #include "include/Cubemap.h"
 #include "include/model.h"
+#include "include/Display.h"
 
 #include "include/random_terrain.h"
 #include "include/Water.h"
@@ -21,6 +22,7 @@ void processInput(GLFWwindow *window);
 void resetColors(std::vector<glm::vec3>& oldColors);
 void setNonUboShaders(std::vector<shader*>& shaders,glm::mat4& proj,glm::mat4& view);
 void setLightingProperties(std::vector<shader*> shaders);
+GLFWwindow* setupContext(Display& display);
 
 bool spacePressed = false;
 
@@ -88,60 +90,15 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
      camera.processScroll(yoffset);
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
-
-    GLFWwindow* window;
-
-    if (!glfwInit())
-        return -1;
-
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);  
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);   
-	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-	
-    //Antialiasing
-    glfwWindowHint(GLFW_SAMPLES, 4);
-
-    window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "Random terrain", NULL, NULL);
-    
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    glfwMakeContextCurrent(window);
-    
-    //This should fit our monitors refresh rate or whatever
-    glfwSwapInterval(1);
- 
-    glfwSetCursorPosCallback(window,mouse_callback);
-    glfwSetScrollCallback(window,scroll_callback);
-    glfwSetMouseButtonCallback(window,mouse_button_callback);
-
-    if(glewInit() != GLEW_OK)
-    {
-	    std::cout << "Error!" << std::endl;
-    }	    
-	
-
-    GLCall(glEnable(GL_DEPTH_TEST));
-    GLCall(glDepthFunc(GL_LESS));
-
-    glEnable(GL_MULTISAMPLE);
-    
-    printf("OpenGL version supported by this platform (%s): \n", glGetString(GL_VERSION));
-    
-	GLCall(glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA));
-	GLCall(glEnable(GL_BLEND)); 
+    Display display;
+    GLFWwindow* window = setupContext(display);
 
     {
    
     std::vector<glm::vec3> colors;
     resetColors(colors);
-
-
 
     std::vector<std::string> faces{
         "res/textures/skybox/wrath_ft.jpg",
@@ -194,11 +151,8 @@ int main(void)
     renderer.setPlayerModel(&playerModel);
     renderer.setPlayerModelShader(&playerModelShader);
 
-    while(!glfwWindowShouldClose(window)){
-
-
-	    GLCall(glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT));
-
+    while(!display.shouldClose()){
+        display.Clear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -208,8 +162,6 @@ int main(void)
         view = glm::lookAt(camera.Position,camera.Position + camera.Front ,camera.Up);
 		proj = glm::perspective(glm::radians(camera.fov),960/(float)540,0.1f,200.0f);
 		
-        
-        
         glm::vec3 look = camera.Front;
         look.y = 0.0f;
         glm::mat4 rotation = inverse(glm::lookAt(glm::vec3(camera.boxPos), glm::vec3(camera.boxPos) + look, glm::vec3(0.0f,1.0f,0.0f)));
@@ -222,9 +174,7 @@ int main(void)
         renderer.setproj(proj);
         renderer.setView(view);
         renderer.DrawScene();
-
-
-        
+  
         if(spacePressed)
         {
             resetColors(colors);
@@ -232,12 +182,9 @@ int main(void)
             spacePressed = false;
         }
 
-        glfwSwapBuffers(window);
-
-        glfwPollEvents();
+        display.SwapBuffers();
+        display.PollEvents();
 	    processInput(window);
-
-
 
      }
 
@@ -303,4 +250,26 @@ void setLightingProperties(std::vector<shader*> shaders)
         s->UnBind();
 
     }
+}
+
+
+GLFWwindow* setupContext(Display& display)
+{
+    display.initialize(DISPLAY_WIDTH,DISPLAY_HEIGHT,"Random Terrain");
+    GLFWwindow* window = display.getWindow();
+ 
+    glfwSetCursorPosCallback(window,mouse_callback);
+    glfwSetScrollCallback(window,scroll_callback);
+    glfwSetMouseButtonCallback(window,mouse_button_callback);
+
+    GLCall(glEnable(GL_DEPTH_TEST));
+    GLCall(glDepthFunc(GL_LESS));
+
+    glEnable(GL_MULTISAMPLE);
+    
+    
+	GLCall(glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA));
+	GLCall(glEnable(GL_BLEND)); 
+
+    return window;
 }
