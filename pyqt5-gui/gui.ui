@@ -226,7 +226,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="MainDimensionsTab">
        <attribute name="title">
@@ -490,7 +490,7 @@
          <set>Qt::AlignCenter</set>
         </property>
        </widget>
-       <widget class="QLabel" name="collisionOffsetLabel_2">
+       <widget class="QLabel" name="primitiveLabel">
         <property name="geometry">
          <rect>
           <x>420</x>
@@ -511,6 +511,104 @@
        <attribute name="title">
         <string>Tree configuration</string>
        </attribute>
+       <widget class="QSpinBox" name="ChanceOfTrees">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>130</y>
+          <width>51</width>
+          <height>41</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+         </font>
+        </property>
+        <property name="value">
+         <number>12</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="FractionImageLabel">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>70</y>
+          <width>41</width>
+          <height>61</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap>assets/Fraction.png</pixmap>
+        </property>
+       </widget>
+       <widget class="QLabel" name="FractionLabel">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>50</y>
+          <width>311</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Chance Of Their Bieng tree(s) Per Grid Square</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="indent">
+         <number>-1</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="maxTreesInGrid">
+        <property name="geometry">
+         <rect>
+          <x>500</x>
+          <y>220</y>
+          <width>51</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>35</number>
+        </property>
+        <property name="value">
+         <number>1</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="MaxTreesPerGrid">
+        <property name="geometry">
+         <rect>
+          <x>470</x>
+          <y>200</y>
+          <width>121</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Max Trees Per Grid</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="treesEnabled">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>111</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Trees Enabled</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -618,6 +716,8 @@
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="assets/Assets.qrc"/>
+ </resources>
  <connections/>
 </ui>
