@@ -32,7 +32,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>2</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="MainMenu">
      <property name="cursor">
@@ -211,6 +211,30 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>90</y>
+        <width>661</width>
+        <height>191</height>
+       </rect>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;These are parameters to the Perlin Noise algorithm which determines the height of each vertice in the terrain&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;. Bias&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The larger the bias, the smoother the terrain. I reccommend using values between 0.8 and 2.0.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;. Octaves&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;More octaves will give more detail to the terrain. If you add many octaves to a small terrain then you will get a floating point error and the program will crash so be careful there.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;. Seed&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If you input the same seed you should get the exact same terrain.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Dimensions">
      <attribute name="title">
@@ -226,7 +250,7 @@
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="MainDimensionsTab">
        <attribute name="title">
@@ -555,7 +579,7 @@
          </rect>
         </property>
         <property name="text">
-         <string>Chance Of Their Bieng tree(s) Per Grid Square</string>
+         <string>Chance Of There Being tree(s) Per Grid Square</string>
         </property>
         <property name="textFormat">
          <enum>Qt::AutoText</enum>
@@ -609,6 +633,204 @@
          <string>Trees Enabled</string>
         </property>
        </widget>
+       <widget class="QLineEdit" name="treeModel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>151</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>../res/models/tree.shader</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="browseTreeModel">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>160</y>
+          <width>80</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="treeShader">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>230</y>
+          <width>151</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>../res/shaders/terrainLightingDirectional.shader</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="browseTreeShader">
+        <property name="geometry">
+         <rect>
+          <x>180</x>
+          <y>230</y>
+          <width>80</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="treeModelLabel">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>130</y>
+          <width>101</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Tree Model File</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="treeShaderLabel">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>200</y>
+          <width>111</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Tree Shader File</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="instancing">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>300</y>
+          <width>161</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Instancing Enabled)</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="useUniformBufferForProjectionAndView">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>330</y>
+          <width>351</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use Uniform Buffer For Projection And View Matrix</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="compatibleTip">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>280</y>
+          <width>481</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Make sure the shaders are compatible with the options set here</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="gridX">
+        <property name="geometry">
+         <rect>
+          <x>420</x>
+          <y>380</y>
+          <width>43</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="gridY">
+        <property name="geometry">
+         <rect>
+          <x>600</x>
+          <y>380</y>
+          <width>43</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <number>10</number>
+        </property>
+        <property name="maximum">
+         <number>1000</number>
+        </property>
+        <property name="value">
+         <number>30</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="gridXLabel">
+        <property name="geometry">
+         <rect>
+          <x>380</x>
+          <y>350</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Vertices In Grid X Axis</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="gridYLabel">
+        <property name="geometry">
+         <rect>
+          <x>560</x>
+          <y>350</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Vertices In Grid Y Axis</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -632,6 +854,55 @@
        <attribute name="title">
         <string>Colors</string>
        </attribute>
+       <widget class="QRadioButton" name="colors">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>20</y>
+          <width>99</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use Colors</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QRadioButton" name="textureTrue">
+        <property name="geometry">
+         <rect>
+          <x>160</x>
+          <y>20</y>
+          <width>121</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Use a texture</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>20</y>
+          <width>441</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Tip: If you are using a texture configure it in the texture tab</string>
+        </property>
+       </widget>
       </widget>
       <widget class="QWidget" name="texture">
        <attribute name="title">
@@ -716,8 +987,6 @@
    </property>
   </action>
  </widget>
- <resources>
-  <include location="assets/Assets.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
