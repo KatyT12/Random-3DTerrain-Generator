@@ -9,7 +9,7 @@
 
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QDialog, QApplication
+from PyQt5.QtWidgets import QFileDialog, QDialog, QApplication, QColorDialog
 from PyQt5.uic import loadUi
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -20,9 +20,37 @@ class MainWindow(QtWidgets.QMainWindow):
         self.browseTreeModel.clicked.connect(lambda textInput=self.browseTreeModel,location='../res/models': self.browseFiles(self.treeModel,location))
         self.browseTreeShader.clicked.connect(lambda textInput=self.browseTreeShader,location='../res/shaders': self.browseFiles(self.treeShader,location))
     
+        self.chooseFirstColor.clicked.connect(lambda : self.fillColor([self.r1,self.g1,self.b1],self.colorPreview1))
+        self.chooseSecondColor.clicked.connect(lambda : self.fillColor([self.r2,self.g2,self.b2],self.colorPreview2))
+
+
+        self.fillColorPreview([self.r1,self.g1,self.b1],self.colorPreview1)
+        self.fillColorPreview([self.r2,self.g2,self.b2],self.colorPreview2)
+
     def browseFiles(self,textInput,location):
         fname = QFileDialog.getOpenFileName(QDialog(),'Select file',location)
         textInput.setText(fname[0])
+
+    def fillColor(self,outputs,preview):
+        color = QColorDialog.getColor()
+        col = [color.red(),color.green(),color.blue()]
+        for i in range(3):
+            outputs[i].setValue(col[i]/255)
+            print(outputs[i].value()) 
+        self.fillColorPreview([outputs[0],outputs[1],outputs[2]],preview)
+        
+    def fillColorPreview(self,inputs,output):
+        col = ""
+        for i in range(3):
+            val = str(hex(int(inputs[i].value()*255)))[2:-1]
+            if len(val) == 1:
+                val += '0'
+            elif len(val) == 0:
+                val += '00'
+            col = col + val
+        output.setStyleSheet('background-color: #'+col+';')
+        
+
 
 app = QApplication([])
 window = MainWindow()
