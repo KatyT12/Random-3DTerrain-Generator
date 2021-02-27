@@ -24,7 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.browseTreeShader.clicked.connect(lambda textInput=self.browseTreeShader,location='../res/shaders': self.browseFiles(self.treeShader,location))
         self.textureLocationBrowse.clicked.connect(lambda textInput=self.textureLocation,location='../res/textures': self.browseFiles(self.textureLocation,location))
         self.browseShaderLocation.clicked.connect(lambda textInput=self.shaderLocation,location='../res/shaders': self.browseFiles(self.shaderLocation,location))
-
+        self.actionSave.triggered.connect(self.saveConfig)
 
         self.chooseFirstColor.clicked.connect(lambda : self.fillColor([self.r1,self.g1,self.b1],self.colorPreview1))
         self.chooseSecondColor.clicked.connect(lambda : self.fillColor([self.r2,self.g2,self.b2],self.colorPreview2))
@@ -58,8 +58,73 @@ class MainWindow(QtWidgets.QMainWindow):
         output.setStyleSheet('background-color: #'+col+';')
         
     def saveConfig(self):
-        name = QtGui.QFileDialog.getSaveFileName(QDialog(),'Save File')
-        file = open(name)
+        name = QFileDialog.getSaveFileName(QDialog(),'Save File')
+        file = open(name[0],"w",encoding="utf-8")
+
+        config = {}
+        perlinnoise = {}
+        dimensions = {}
+        colors = {}
+        lighting = {}
+        water = {}
+        shader = {}
+
+        perlinnoise["bias"] = self.bias.value()
+        perlinnoise["octaves"] = self.octaves.value()
+        perlinnoise["seed"] = self.seed.value()
+
+        dimensions["x"] = self.x.value()
+        dimensions["y"] = self.y.value()
+        dimensions["max_height"] = self.maxHeight.value()
+        dimensions["posX"] = self.posx.value()
+        dimensions["posY"] = self.posy.value()
+        dimensions["offset"] = self.offset.value()
+        dimensions["collisionOffset"] = self.collisionOffset.value()
+        dimensions["primitive"] = self.primitive.currentText()
+        dimensions["trees"] = self.treesEnabled.isChecked()
+        dimensions["grid"] = {}
+        dimensions["grid"]["chancePerGrid"] = self.chanceOfTrees.value()
+        dimensions["grid"]["maxNumInGrid"] = self.maxTreesInGrid.value()
+        dimensions["grid"]["treeModel"] = self.treeModel.text()
+        dimensions["grid"]["treeShader"] = self.treeShader.text()
+        dimensions["grid"]["treeUniformBufferForProjAndView"] = self.useUniformBufferForProjectionAndView.isChecked()
+        dimensions["grid"]["instancing"] = self.instancing.isChecked()
+        dimensions["grid"]["gridX"] = self.gridX.value()
+        dimensions["grid"]["gridY"] = self.gridY.value()
+
+        colors["texture"] = self.textureTrue.isChecked()
+        colors["textureLocation"] = self.textureLocation.text()
+        colors["textureSlot"] = self.textureSlot.value()
+        colors["textureRepeat"] = self.textureRepeat.isChecked()
+        colors["textureRepeatConfig"] = {}
+        colors["textureRepeatConfig"]["xTextureRepeatOffset"] = self.xTextureRepeatOffset.value()
+        colors["textureRepeatConfig"]["yTextureRepeatOffset"] = self.yTextureRepeatOffset.value()
+        colors["color1"] = [self.r1.value(),self.g1.value(),self.b1.value()]
+        colors["color2"] = [self.r2.value(),self.g2.value(),self.b2.value()]
+
+        
+        config["genNormals"] = self.genNormals.isChecked()
+        lighting["perFaceNormals"] = self.perFaceNormals.isChecked()
+
+        config["waterPresent"] = self.waterPresent.isChecked()
+
+        water["waterY"] = self.waterY.value()
+        water["waterColor"] = [self.wr.value(), self.wg.value(), self.wb.value()]
+        water["useFrameBuffers"] = self.useFrameBuffers.isChecked()
+
+        shader["shaderLocation"] = self.shaderLocation.text()
+        shader["textureUniformName"] = self.textureUniformName.text()
+        shader["uniformBufferForProjAndView"] = self.uniformBufferForProjAndView.isChecked()
+        shader["geometryShader"] = self.geometryShader.isChecked()
+
+        config["perlinnoise"] = perlinnoise
+        config["dimensions"] = dimensions
+        config["colors"] = colors
+        config["lighting"] = lighting
+        config["water"] = water
+        config["shader"] = shader
+
+        json.dump(config,file,ensure_ascii = False)
 
 app = QApplication([])
 window = MainWindow()

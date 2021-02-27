@@ -32,7 +32,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>6</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="MainMenu">
      <property name="cursor">
@@ -67,7 +67,7 @@
        <double>0.000010000000000</double>
       </property>
       <property name="value">
-       <double>1.600000000000000</double>
+       <double>1.400000000000000</double>
       </property>
      </widget>
      <widget class="QSpinBox" name="octaves">
@@ -91,7 +91,7 @@
        <number>11</number>
       </property>
       <property name="value">
-       <number>8</number>
+       <number>9</number>
       </property>
      </widget>
      <widget class="QLabel" name="biasLabel">
@@ -250,7 +250,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="MainDimensionsTab">
        <attribute name="title">
@@ -355,7 +355,7 @@ p, li { white-space: pre-wrap; }
          <double>0.001000000000000</double>
         </property>
         <property name="value">
-         <double>2.900000000000000</double>
+         <double>0.500000000000000</double>
         </property>
        </widget>
        <widget class="QComboBox" name="primitive">
@@ -535,7 +535,7 @@ p, li { white-space: pre-wrap; }
        <attribute name="title">
         <string>Tree configuration</string>
        </attribute>
-       <widget class="QSpinBox" name="ChanceOfTrees">
+       <widget class="QSpinBox" name="chanceOfTrees">
         <property name="geometry">
          <rect>
           <x>500</x>
@@ -731,7 +731,7 @@ p, li { white-space: pre-wrap; }
          </rect>
         </property>
         <property name="text">
-         <string>Instancing Enabled)</string>
+         <string>Instancing Enabled</string>
         </property>
        </widget>
        <widget class="QCheckBox" name="useUniformBufferForProjectionAndView">
@@ -1165,7 +1165,7 @@ p, li { white-space: pre-wrap; }
          <bool>true</bool>
         </property>
        </widget>
-       <widget class="QDoubleSpinBox" name="xTextureRepeatPffset">
+       <widget class="QDoubleSpinBox" name="xTextureRepeatOffset">
         <property name="geometry">
          <rect>
           <x>60</x>
@@ -1341,7 +1341,7 @@ p, li { white-space: pre-wrap; }
        <string>Y Coordinate of water plane</string>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QCheckBox" name="useFrameBuffers">
       <property name="geometry">
        <rect>
         <x>410</x>
@@ -1481,7 +1481,7 @@ p, li { white-space: pre-wrap; }
        <string>Shader Location</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="shaderUniformName">
+     <widget class="QLineEdit" name="textureUniformName">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -1504,7 +1504,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="text">
-       <string>Shader Uniform Name</string>
+       <string>Texture Uniform Name</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
