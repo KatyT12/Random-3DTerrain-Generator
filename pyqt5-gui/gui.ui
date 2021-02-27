@@ -32,7 +32,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>6</number>
     </property>
     <widget class="QWidget" name="MainMenu">
      <property name="cursor">
@@ -190,7 +190,7 @@
        <number>343928473</number>
       </property>
      </widget>
-     <widget class="QLabel" name="label_4">
+     <widget class="QLabel" name="perlinNoiseTitle">
       <property name="geometry">
        <rect>
         <x>190</x>
@@ -250,7 +250,7 @@ p, li { white-space: pre-wrap; }
        </rect>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="MainDimensionsTab">
        <attribute name="title">
@@ -648,7 +648,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>../res/models/tree.shader</string>
+         <string>res/models/tree.shader</string>
         </property>
        </widget>
        <widget class="QPushButton" name="browseTreeModel">
@@ -679,7 +679,7 @@ p, li { white-space: pre-wrap; }
          </font>
         </property>
         <property name="text">
-         <string>../res/shaders/terrainLightingDirectional.shader</string>
+         <string>res/shaders/tree.shader</string>
         </property>
        </widget>
        <widget class="QPushButton" name="browseTreeShader">
@@ -883,7 +883,7 @@ p, li { white-space: pre-wrap; }
          <string>Use a texture</string>
         </property>
        </widget>
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="colorTip_2">
         <property name="geometry">
          <rect>
           <x>280</x>
@@ -1087,6 +1087,174 @@ p, li { white-space: pre-wrap; }
        <attribute name="title">
         <string>Texture</string>
        </attribute>
+       <widget class="QPushButton" name="textureLocationBrowse">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>110</y>
+          <width>80</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Browse</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="textureLocation">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>211</width>
+          <height>23</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>res/textures/terrainGrass.png</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="textureLocationLabel">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>80</y>
+          <width>151</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Texture Location</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+       <widget class="QLabel" name="textureTip">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>591</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Tip: For the configuration here to be used the textureTrue must be enabled</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="textureRepeat">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>190</y>
+          <width>221</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Repeat texture across terrain</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="xTextureRepeatPffset">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>260</y>
+          <width>62</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <double>10.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>50.000000000000000</double>
+        </property>
+       </widget>
+       <widget class="QDoubleSpinBox" name="yTextureRepeatOffset">
+        <property name="geometry">
+         <rect>
+          <x>280</x>
+          <y>260</y>
+          <width>62</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="minimum">
+         <double>10.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>1000.000000000000000</double>
+        </property>
+        <property name="value">
+         <double>50.000000000000000</double>
+        </property>
+       </widget>
+       <widget class="QLabel" name="xTextureRepeatOffsetLabel">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>230</y>
+          <width>181</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>X Offset for texture repeat</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="yTextureRepeatOffsetLabel">
+        <property name="geometry">
+         <rect>
+          <x>240</x>
+          <y>230</y>
+          <width>181</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Y Offset for texture repeat</string>
+        </property>
+       </widget>
+       <widget class="QSpinBox" name="textureSlot">
+        <property name="geometry">
+         <rect>
+          <x>510</x>
+          <y>110</y>
+          <width>43</width>
+          <height>24</height>
+         </rect>
+        </property>
+        <property name="value">
+         <number>2</number>
+        </property>
+       </widget>
+       <widget class="QLabel" name="textureSlotLabel">
+        <property name="geometry">
+         <rect>
+          <x>490</x>
+          <y>80</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Texture Slot</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -1094,20 +1262,287 @@ p, li { white-space: pre-wrap; }
      <attribute name="title">
       <string>Lighting</string>
      </attribute>
+     <widget class="QCheckBox" name="perFaceNormals">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>100</y>
+        <width>131</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>PerFaceNormals</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="genNormals">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>40</y>
+        <width>421</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Generate Normals (This needs to be enabled for the lighting)</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Water">
      <attribute name="title">
       <string>Water</string>
      </attribute>
+     <widget class="QCheckBox" name="waterPresent">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>40</y>
+        <width>85</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Water On</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="waterY">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>160</y>
+        <width>62</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <double>-99.000000000000000</double>
+      </property>
+      <property name="value">
+       <double>70.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="waterYLabel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>130</y>
+        <width>191</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Y Coordinate of water plane</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>410</x>
+        <y>160</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use Frame Buffers</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="chooseWaterColor">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>270</y>
+        <width>161</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Choose Color</string>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="wr">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>280</y>
+        <width>62</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.000000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="wg">
+      <property name="geometry">
+       <rect>
+        <x>390</x>
+        <y>280</y>
+        <width>62</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.400000000000000</double>
+      </property>
+     </widget>
+     <widget class="QDoubleSpinBox" name="wb">
+      <property name="geometry">
+       <rect>
+        <x>500</x>
+        <y>280</y>
+        <width>62</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <double>1.000000000000000</double>
+      </property>
+      <property name="singleStep">
+       <double>0.001000000000000</double>
+      </property>
+      <property name="value">
+       <double>0.700000000000000</double>
+      </property>
+     </widget>
+     <widget class="QLabel" name="waterColorPreview">
+      <property name="geometry">
+       <rect>
+        <x>610</x>
+        <y>280</y>
+        <width>41</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="Shader">
      <attribute name="title">
       <string>Shader</string>
      </attribute>
+     <widget class="QLineEdit" name="shaderLocation">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>301</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>res/shaders/terrainLightingDirectional.shader</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="browseShaderLocation">
+      <property name="geometry">
+       <rect>
+        <x>340</x>
+        <y>90</y>
+        <width>80</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Browse</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="shaderLocationLabel">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Shader Location</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="shaderUniformName">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>170</y>
+        <width>113</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>u_Texture</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Shader Uniform Name</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="geometryShader">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>170</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Geometry shader</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="uniformBufferForProjAndView">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>210</y>
+        <width>321</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Uniform Buffer for Projection And View Matrix</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="Lighting">
+    <widget class="QWidget" name="Matrices">
      <attribute name="title">
-      <string>Lighting</string>
+      <string>Matrices</string>
      </attribute>
     </widget>
    </widget>
