@@ -68,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow):
         lighting = {}
         water = {}
         shader = {}
+        matrices = {}
 
         perlinnoise["bias"] = self.bias.value()
         perlinnoise["octaves"] = self.octaves.value()
@@ -117,12 +118,15 @@ class MainWindow(QtWidgets.QMainWindow):
         shader["uniformBufferForProjAndView"] = self.uniformBufferForProjAndView.isChecked()
         shader["geometryShader"] = self.geometryShader.isChecked()
 
+        matrices["model"] = [self.model1.value(),self.model2.value(),self.model3.value(),self.model4.value(),self.model5.value(),self.model6.value(),self.model7.value(),self.model8.value(),self.model9.value(),self.model10.value(),self.model11.value(),self.model12.value(),self.model13.value(),self.model14.value(),self.model15.value(),self.model16.value()]
+
         config["perlinnoise"] = perlinnoise
         config["dimensions"] = dimensions
         config["colors"] = colors
         config["lighting"] = lighting
         config["water"] = water
         config["shader"] = shader
+        config["matrices"] = matrices
 
         json.dump(config,file,ensure_ascii = False)
 
