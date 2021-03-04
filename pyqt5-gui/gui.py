@@ -28,6 +28,8 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.actionRun.triggered.connect(self.runConfig)
         self.runButton.clicked.connect(self.runConfig)
+        self.actionImport.triggered.connect(self.importConfig)
+        self.importButton.clicked.connect(self.importConfig)
 
         self.actionSave.triggered.connect(self.saveConfig)
         self.saveButton.clicked.connect(self.runConfig)
@@ -65,9 +67,10 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def saveConfig(self):
         name = QFileDialog.getSaveFileName(QDialog(),'Save File')
-        self.name = name[0]
-        file = open(name[0],"w",encoding="utf-8")
-        self.writeJson(file)
+        if name != '':
+            self.name = name[0]
+            file = open(name[0],"w",encoding="utf-8")
+            self.writeJson(file)
        
 
     def runConfig(self):
@@ -147,6 +150,78 @@ class MainWindow(QtWidgets.QMainWindow):
         config["matrices"] = matrices
 
         json.dump(config,file,ensure_ascii = False)
+
+
+    def importConfig(self):
+        name = QFileDialog.getOpenFileName(QDialog(),'Import File')
+        if name != '':
+            self.name = name[0]
+            with open(name[0],'r') as file:
+                obj = json.loads(file.read())
+                
+                self.bias.setValue(obj["perlinnoise"]["bias"])
+                self.seed.setValue(obj["perlinnoise"]["seed"])
+                self.octaves.setValue(obj["perlinnoise"]["octaves"])
+        
+                self.x.setValue(obj["dimensions"]["x"])
+                self.y.setValue(obj["dimensions"]["y"])
+                self.maxHeight.setValue(obj["dimensions"]["max_height"])
+                self.posx.setValue(obj["dimensions"]["posX"])
+                self.posy.setValue(obj["dimensions"]["posY"])
+                self.offset.setValue(obj["dimensions"]["offset"])
+                self.collisionOffset.setValue(obj["dimensions"]["collisionOffset"])
+                self.primitive.setCurrentText(obj["dimensions"]["primitive"])
+                self.treesEnabled.setChecked(obj["dimensions"]["trees"])
+
+                self.chanceOfTrees.setValue(obj["dimensions"]["grid"]["chancePerGrid"])
+                self.maxTreesInGrid.setValue(obj["dimensions"]["grid"]["maxNumInGrid"])
+                self.treeModel.setText(obj["dimensions"]["grid"]["treeModel"])
+                self.treeShader.setText(obj["dimensions"]["grid"]["treeShader"])
+                self.useUniformBufferForProjectionAndView.setChecked(obj["dimensions"]["grid"]["treeUniformBufferForProjAndView"])
+                self.instancing.setChecked(obj["dimensions"]["grid"]["instancing"])
+                self.gridX.setValue(obj["dimensions"]["grid"]["gridX"])
+                self.gridY.setValue(obj["dimensions"]["grid"]["gridY"])
+
+                self.textureTrue.setChecked(obj["colors"]["texture"])
+                self.textureLocation.setText(obj["colors"]["textureLocation"])
+                self.textureSlot.setValue(obj["colors"]["textureSlot"])
+                self.textureRepeat.setChecked(obj["colors"]["textureRepeat"])
+
+                self.xTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["xTextureRepeatOffset"])
+                self.yTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["yTextureRepeatOffset"])
+
+                self.r1.setValue(obj["colors"]["color1"][0])
+                self.g1.setValue(obj["colors"]["color1"][1])
+                self.b1.setValue(obj["colors"]["color1"][2])
+
+                self.r2.setValue(obj["colors"]["color2"][0])
+                self.g2.setValue(obj["colors"]["color2"][1])
+                self.b2.setValue(obj["colors"]["color2"][2])
+
+                self.genNormals.setChecked(obj["genNormals"])
+                self.perFaceNormals.setChecked(obj["lighting"]["perFaceNormals"])
+
+                self.waterPresent.setChecked(obj["waterPresent"])
+
+                self.waterY.setValue(obj["water"]["waterY"])
+                self.wr.setValue(obj["water"]["waterColor"][0])
+                self.wg.setValue(obj["water"]["waterColor"][1])
+                self.wb.setValue(obj["water"]["waterColor"][2])
+                self.useFrameBuffers.setChecked(obj["water"]["useFrameBuffers"])
+
+                self.shaderLocation.setText(obj["shader"]["shaderLocation"])
+                self.textureUniformName.setText(obj["shader"]["textureUniformName"])
+                self.uniformBufferForProjAndView.setChecked(obj["shader"]["uniformBufferForProjAndView"])
+                self.geometryShader.setChecked(obj["shader"]["geometryShader"])
+
+                arr = [self.model1.value(),self.model2.value(),self.model3.value(),self.model4.value(),self.model5.value(),self.model6.value(),self.model7.value(),self.model8.value(),self.model9.value(),self.model10.value(),self.model11.value(),self.model12.value(),self.model13.value(),self.model14.value(),self.model15.value(),self.model16.value()]
+                for i in range(16):
+                    arr[i] = obj["matrices"]["model"][i]
+
+                self.chooseFirstColor.clicked.connect(lambda : self.fillColor([self.r1,self.g1,self.b1],self.colorPreview1))
+                self.chooseSecondColor.clicked.connect(lambda : self.fillColor([self.r2,self.g2,self.b2],self.colorPreview2))
+                self.chooseWaterColor.clicked.connect(lambda : self.fillColor([self.wr,self.wg,self.wb],self.waterColorPreview))
+
 
 app = QApplication([])
 window = MainWindow()
