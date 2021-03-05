@@ -173,22 +173,25 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.primitive.setCurrentText(obj["dimensions"]["primitive"])
                 self.treesEnabled.setChecked(obj["dimensions"]["trees"])
 
-                self.chanceOfTrees.setValue(obj["dimensions"]["grid"]["chancePerGrid"])
-                self.maxTreesInGrid.setValue(obj["dimensions"]["grid"]["maxNumInGrid"])
-                self.treeModel.setText(obj["dimensions"]["grid"]["treeModel"])
-                self.treeShader.setText(obj["dimensions"]["grid"]["treeShader"])
-                self.useUniformBufferForProjectionAndView.setChecked(obj["dimensions"]["grid"]["treeUniformBufferForProjAndView"])
-                self.instancing.setChecked(obj["dimensions"]["grid"]["instancing"])
-                self.gridX.setValue(obj["dimensions"]["grid"]["gridX"])
-                self.gridY.setValue(obj["dimensions"]["grid"]["gridY"])
+                if obj.get("trees"):
+                    self.chanceOfTrees.setValue(obj["dimensions"]["grid"]["chancePerGrid"])
+                    self.maxTreesInGrid.setValue(obj["dimensions"]["grid"]["maxNumInGrid"])
+                    self.treeModel.setText(obj["dimensions"]["grid"]["treeModel"])
+                    self.treeShader.setText(obj["dimensions"]["grid"]["treeShader"])
+                    self.useUniformBufferForProjectionAndView.setChecked(obj["dimensions"]["grid"]["treeUniformBufferForProjAndView"])
+                    self.instancing.setChecked(obj["dimensions"]["grid"]["instancing"])
+                    self.gridX.setValue(obj["dimensions"]["grid"]["gridX"])
+                    self.gridY.setValue(obj["dimensions"]["grid"]["gridY"])
 
-                self.textureTrue.setChecked(obj["colors"]["texture"])
-                self.textureLocation.setText(obj["colors"]["textureLocation"])
-                self.textureSlot.setValue(obj["colors"]["textureSlot"])
-                self.textureRepeat.setChecked(obj["colors"]["textureRepeat"])
+                if obj.get("colors"):
+                    self.textureTrue.setChecked(obj["colors"]["texture"])
+                    self.textureLocation.setText(obj["colors"]["textureLocation"])
+                    self.textureSlot.setValue(obj["colors"]["textureSlot"])
+                    self.textureRepeat.setChecked(obj["colors"]["textureRepeat"])
 
-                self.xTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["xTextureRepeatOffset"])
-                self.yTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["yTextureRepeatOffset"])
+                if obj["colors"].get("textureRepeatConifig"):
+                    self.xTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["xTextureRepeatOffset"])
+                    self.yTextureRepeatOffset.setValue(obj["colors"]["textureRepeatConfig"]["yTextureRepeatOffset"])
 
                 self.r1.setValue(obj["colors"]["color1"][0])
                 self.g1.setValue(obj["colors"]["color1"][1])
@@ -198,25 +201,28 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.g2.setValue(obj["colors"]["color2"][1])
                 self.b2.setValue(obj["colors"]["color2"][2])
 
-                self.genNormals.setChecked(obj["genNormals"])
-                self.perFaceNormals.setChecked(obj["lighting"]["perFaceNormals"])
+                if obj.get("water"):
+                    self.genNormals.setChecked(obj["genNormals"])
+                    self.perFaceNormals.setChecked(obj["lighting"]["perFaceNormals"])
 
-                self.waterPresent.setChecked(obj["waterPresent"])
+                    self.waterPresent.setChecked(obj["waterPresent"])
 
-                self.waterY.setValue(obj["water"]["waterY"])
-                self.wr.setValue(obj["water"]["waterColor"][0])
-                self.wg.setValue(obj["water"]["waterColor"][1])
-                self.wb.setValue(obj["water"]["waterColor"][2])
-                self.useFrameBuffers.setChecked(obj["water"]["useFrameBuffers"])
+                    self.waterY.setValue(obj["water"]["waterY"])
+                    self.wr.setValue(obj["water"]["waterColor"][0])
+                    self.wg.setValue(obj["water"]["waterColor"][1])
+                    self.wb.setValue(obj["water"]["waterColor"][2])
+                    self.useFrameBuffers.setChecked(obj["water"]["useFrameBuffers"])
 
-                self.shaderLocation.setText(obj["shader"]["shaderLocation"])
-                self.textureUniformName.setText(obj["shader"]["textureUniformName"])
-                self.uniformBufferForProjAndView.setChecked(obj["shader"]["uniformBufferForProjAndView"])
-                self.geometryShader.setChecked(obj["shader"]["geometryShader"])
+                if obj.get("shader"):
+                    self.shaderLocation.setText(obj["shader"]["shaderLocation"])
+                    self.textureUniformName.setText(obj["shader"]["textureUniformName"])
+                    self.uniformBufferForProjAndView.setChecked(obj["shader"]["uniformBufferForProjAndView"])
+                    self.geometryShader.setChecked(obj["shader"]["geometryShader"])
 
-                arr = [self.model1.value(),self.model2.value(),self.model3.value(),self.model4.value(),self.model5.value(),self.model6.value(),self.model7.value(),self.model8.value(),self.model9.value(),self.model10.value(),self.model11.value(),self.model12.value(),self.model13.value(),self.model14.value(),self.model15.value(),self.model16.value()]
-                for i in range(16):
-                    arr[i] = obj["matrices"]["model"][i]
+                if obj["matrices"].get("model"):
+                    arr = [self.model1.value(),self.model2.value(),self.model3.value(),self.model4.value(),self.model5.value(),self.model6.value(),self.model7.value(),self.model8.value(),self.model9.value(),self.model10.value(),self.model11.value(),self.model12.value(),self.model13.value(),self.model14.value(),self.model15.value(),self.model16.value()]
+                    for i in range(16):
+                        arr[i] = obj["matrices"]["model"][i]
 
                 self.chooseFirstColor.clicked.connect(lambda : self.fillColor([self.r1,self.g1,self.b1],self.colorPreview1))
                 self.chooseSecondColor.clicked.connect(lambda : self.fillColor([self.r2,self.g2,self.b2],self.colorPreview2))
