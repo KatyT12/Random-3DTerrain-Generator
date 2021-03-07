@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Random terrain config</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonFollowStyle</enum>
   </property>
@@ -32,7 +35,7 @@
      </font>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="MainMenu">
      <property name="cursor">
@@ -137,7 +140,7 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>270</y>
+        <y>310</y>
         <width>101</width>
         <height>41</height>
        </rect>
@@ -161,7 +164,7 @@
       <property name="geometry">
        <rect>
         <x>310</x>
-        <y>270</y>
+        <y>310</y>
         <width>101</width>
         <height>41</height>
        </rect>
@@ -184,8 +187,8 @@
      <widget class="QLabel" name="seedLabel">
       <property name="geometry">
        <rect>
-        <x>550</x>
-        <y>270</y>
+        <x>520</x>
+        <y>310</y>
         <width>101</width>
         <height>41</height>
        </rect>
@@ -208,7 +211,7 @@
      <widget class="QSpinBox" name="seed">
       <property name="geometry">
        <rect>
-        <x>520</x>
+        <x>500</x>
         <y>370</y>
         <width>161</width>
         <height>61</height>
@@ -232,7 +235,7 @@
      <widget class="QLabel" name="perlinNoiseTitle">
       <property name="geometry">
        <rect>
-        <x>190</x>
+        <x>180</x>
         <y>50</y>
         <width>361</width>
         <height>41</height>
@@ -253,7 +256,7 @@
      <widget class="QTextBrowser" name="textBrowser">
       <property name="geometry">
        <rect>
-        <x>50</x>
+        <x>40</x>
         <y>90</y>
         <width>661</width>
         <height>191</height>

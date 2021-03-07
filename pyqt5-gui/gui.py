@@ -228,8 +228,46 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.chooseSecondColor.clicked.connect(lambda : self.fillColor([self.r2,self.g2,self.b2],self.colorPreview2))
                 self.chooseWaterColor.clicked.connect(lambda : self.fillColor([self.wr,self.wg,self.wb],self.waterColorPreview))
 
+style = """
+   
+
+    QWidget
+    {
+        color: white;
+        background: #152532;
+    }
+
+    QTabBar::tab::selected {background: gray;}
+    QTabBar::tab
+    {
+        color: white;
+        background: #212227;
+        padding: 8px;
+    }
+
+    QDialog
+    {
+        background: #152532;
+    }
+
+
+    QSpinBox, QDoubleSpinBox
+    {
+        color: black;
+    }
+
+    QPushButton
+    {
+        border: none;
+        background-color: #005556;
+        color: white;
+    }
+
+    
+"""
 
 app = QApplication([])
+app.setStyleSheet(style)
 window = MainWindow()
 window.show()
 app.exec()
