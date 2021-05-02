@@ -11,7 +11,7 @@ bool GLLogCall(const char* function, const char* file, int line);
 	x;\
 	ASSERT(GLLogCall(#x,__FILE__,__LINE__))
 
-#ifdef WIN32
+#ifdef MINGW32
 	#define ASSERT(x) if(!(x)) __debugbreak();
 #else 
 	#define ASSERT(x) if(!(x)) raise(SIGTRAP);
