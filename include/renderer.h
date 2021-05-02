@@ -11,7 +11,11 @@ bool GLLogCall(const char* function, const char* file, int line);
 	x;\
 	ASSERT(GLLogCall(#x,__FILE__,__LINE__))
 
-#define ASSERT(x) if(!(x)) raise(SIGTRAP);
+#ifdef WIN32
+	#define ASSERT(x) if(!(x)) __debugbreak();
+#else 
+	#define ASSERT(x) if(!(x)) raise(SIGTRAP);
+#endif
 
 #define DISPLAY_WIDTH 960
 #define DISPLAY_HEIGHT 640
