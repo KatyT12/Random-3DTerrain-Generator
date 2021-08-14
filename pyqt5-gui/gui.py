@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
         
     def saveConfig(self):
         name = QFileDialog.getSaveFileName(QDialog(),'Save File')
-        if name != '':
+        if len(name) != 0:
             self.name = name[0]
             file = open(name[0],"w",encoding="utf-8")
             self.writeJson(file)
@@ -229,8 +229,6 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.chooseWaterColor.clicked.connect(lambda : self.fillColor([self.wr,self.wg,self.wb],self.waterColorPreview))
 
 style = """
-   
-
     QWidget
     {
         color: white;
@@ -253,7 +251,7 @@ style = """
 
     QSpinBox, QDoubleSpinBox
     {
-        color: black;
+        color: white;
     }
 
     QPushButton
